@@ -4,7 +4,7 @@ import java.awt.geom.*;
 import java.awt.*;
 
 
-public class SmartCar implements CarController {
+public class SmartCar {
 
     // The two controls: either (vel,phi) or (acc,phi)
     double acc;       // Acceleration.
@@ -31,10 +31,12 @@ public class SmartCar implements CarController {
      * @param obstacles [description]
      * @param sensors   [description]
      */
-    public void SmartCar (double initX, double initY, double initTheta,  SensorPack sensors) {
+    public void SmartCar (double initX, double initY, double initTheta) {
         this.obstacles = obstacles;
         this.sensors = sensors;
         this.lane = lane;
+        this.vel = 10;
+        this.theta = 0;
     }
 
     /**
@@ -57,6 +59,7 @@ public class SmartCar implements CarController {
 
 
     public void move () {
+        vel = 10;
         // This is where you adjust the control values.
         //
         if (changinglanes) {
@@ -71,8 +74,10 @@ public class SmartCar implements CarController {
             // tooCloseToCar()
             // 
             //if any car is speeding and not i'm changing lanes
-            //are they in my lane
+            //is speeder in my lane
             //are/is other car(s) in the other lane(s)?
+            //
+            //do i need to change lanes to stop speeder?
             //
         }
 
@@ -105,6 +110,7 @@ public class SmartCar implements CarController {
      */
     public boolean changeLanes(boolean left) {
         changingLanes = true;
+        //newlane = lane+-1;
         //update lane
         return true;
     }

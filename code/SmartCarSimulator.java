@@ -5,7 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 
-public class CopCarSimulator implements CopSimulator
+public class SmartCarSimulator
 { 
   /**
    * constructor gets passed arraylist of cars
@@ -21,14 +21,14 @@ public class CopCarSimulator implements CopSimulator
   double S = 30.0D;
   double L = 40.0D;
   
-  ArrayList<SmartCar>;
+  ArrayList<SmartCar> cars;
 
   double t;
-  
 
-  public CopCarSimulator(ArrayList<SmartCar> Cars)
+  public SmartCarSimulator(ArrayList<SmartCar> Cars)
   {
     //override constructor
+    //creating a local list of cars
   }
   
 
@@ -77,6 +77,7 @@ public class CopCarSimulator implements CopSimulator
 
   public void draw(Graphics2D g2, Dimension D)
   {
+    //redrawing cars with new values
     int i = (int)this.copx;
     int j = (int)this.copy;
     AffineTransform localAffineTransform1 = AffineTransform.getRotateInstance(-this.theta, i, D.height - j);
@@ -92,8 +93,9 @@ public class CopCarSimulator implements CopSimulator
     
   }
   
-  public void nextStep(double control1, double control2, double delT)
+  public void nextStep(ArrayList<SmartCar> Cars)
   {
+    //updating local cars list with new values
     this.copv = control1;
     this.perpv = control2;
     double d1 = delT * this.copv * Math.cos(this.theta);

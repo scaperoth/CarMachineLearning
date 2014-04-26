@@ -5,21 +5,23 @@ import java.awt.*;
 
 
 public class TrafficSim implements CarController {
-
-
-    ArrayList<SmartCar> Cars;
+    //traffic details
+    int maxNumCars = 1;
+    double speedLimit = 5.0;
+    double numLanes = 2;
+    double laneWidth = 10;
 
     // Sensors - an instance of SensorPack (created later).
     SensorPack sensorPack = null;
 
     ArrayList<Rectangle2D.Double> obstacles;
-    SensorPack sensors;
 
     // Rectangular axis-aligned obstacles.
     ArrayList<Rectangle2D.Double> obstacles = new ArrayList<Rectangle2D.Double>();
 
-    // Is the first control an accelerator?
-    boolean isAccelModel = false;
+    SmartCarSimulator carSim = null;
+    Arraylist<SmartCar> cars;
+    Road roadControl;
 
     // Animation stuff.
     Thread currentThread;
@@ -44,10 +46,16 @@ public class TrafficSim implements CarController {
 
         AffineTransform savedTransform = g2.getTransform ();
 
-        Road.draw (g2, D);
+        if (roadControl != null) {
+            roadControl.draw(g2, D);
+        }
 
-        sensorPack.draw (g2, D);
+        if (carSim != null) {
+            carSim.draw(g2, D);
+        }
 
+
+        g2.setTransform (savedTransform);
         // Top msg.
         g.setColor (Color.black);
         g.drawString (topMessage, 20, 30);
@@ -61,23 +69,13 @@ public class TrafficSim implements CarController {
 
     void reset () {
 
-
-        // We'll add track points starting from the initial location.
-        trackPoints = new ArrayList<Point2D.Double> ();
-        trackPoints.add (new Point2D.Double (initX, initY));
-
         setScene ();
 
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
 
-        sensorPack = new BasicSensorPack ();
-        sensorPack.init (initX, initY, initTheta);
-        sensorPack.doSensing (initX, initY, initTheta, 0);
-
         // This must follow setScene() and sensors.
         setCar ();
-
 
         // Start the animation.
         isPaused = false;
@@ -86,15 +84,17 @@ public class TrafficSim implements CarController {
     }
 
 
-    void setCar ()
-    {
+    void setCar () {
         //creates road
         //calls getCars() from road
         //creates sim from car list
         //creates controllers from car list
-        
+        cars = roadControl.getCars();
+        carSim = new SmartCarSimulator(cars);
+        copControl.init (initcopX, initcopY, initperpX, initperp
+
     }
-    
+
 
 
     void stopAnimationThread () {
@@ -227,6 +227,12 @@ public class TrafficSim implements CarController {
         return panel;
     }
 
+    public void loadController(){
+
+        roadControl = new Road(numCars, speedLimit, numLanes, laneWidth);
+        SmartCar newCar = newSmartCar(initx, inity, initTheta);
+        roadControl.add(newCar);
+    }
 
     void makeFrame () {
         JFrame frame = new JFrame ();
@@ -235,7 +241,7 @@ public class TrafficSim implements CarController {
         Container cPane = frame.getContentPane();
         cPane.add (makeBottomPanel(), BorderLayout.SOUTH);
         cPane.add (this, BorderLayout.CENTER);
-        
+        loadController();
         frame.setVisible (true);
     }
 
@@ -245,7 +251,7 @@ public class TrafficSim implements CarController {
     public static void main (String[] argv) {
 
         TrafficSim gui = new TrafficSim ();
-       
+
         gui.makeFrame ();
     }
 
