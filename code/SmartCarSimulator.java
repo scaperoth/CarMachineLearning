@@ -5,60 +5,110 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 
-public class SmartCarSimulator
-{ 
-  /**
-   * constructor gets passed arraylist of cars
-   * each cars attribute is manipulated by the nextstep method
-   * and when draw is called, it loops through and "draws" each car
-   *
-   * 
-   */
-  double maxHeight = 1000.0D;
-  
-  double r = 5.0D;
-  double d = 4.0D;
-  double S = 30.0D;
-  double L = 40.0D;
-  
-  ArrayList<SmartCar> cars;
+public class SmartCarSimulator {
+    /**
+     * constructor gets passed arraylist of cars
+     * each cars attribute is manipulated by the nextstep method
+     * and when draw is called, it loops through and "draws" each car
+     *
+     *
+     */
+    double maxHeight = 1000.0D;
 
-  double t;
+    double r = 5.0D;
+    double d = 4.0D;
+    double S = 30.0D;
+    double L = 40.0D;
 
-  public SmartCarSimulator(ArrayList<SmartCar> cars)
-  {
-    //override constructor
-    //creating a local list of cars
-  }
-  
+    Road road;
+    ArrayList<SmartCar> cars;
+    double t;
 
-  public void init()
-  {
+    public SmartCarSimulator(ArrayList<SmartCar> cars, Road road) {
+        this.cars = cars;
+        this.road = road;
+        this.t = 0.0;
+        //override constructor
+        //creating a local list of cars
+    }
 
-  }
-  
 
-  public void draw(Graphics2D g2, Dimension D)
-  {
-      return;
-    
-  }
-  
-  public void nextStep(ArrayList<SmartCar> Cars)
-  {
-  }
-  
-  
+    public double getX(SmartCar car) {
+        return 0;
+    }
 
-  public double getDistanceMoved()
-  {
-    return 0;
-  }
-  
+    public double getY(SmartCar car) {
+        return 0;
+    }
 
-  public double getTime()
-  {
-    return 0;
-  }
+    public double getTheta(SmartCar car) {
+        return 0;
+    }
+
+    public void init() {
+
+    }
+
+
+    public void draw(Graphics2D g2, Dimension D) {
+        for (SmartCar thiscar : cars) {
+            int i = (int)thiscar.x;
+            int j = (int)thiscar.y;
+            AffineTransform localAffineTransform1 = AffineTransform.getRotateInstance(-thiscar.theta, i, D.height - j);
+
+            g2.setTransform(localAffineTransform1);
+            g2.setColor(Color.cyan);
+            g2.fillOval(i - 15, D.height - j - 8, 30, 16);
+            g2.setColor(Color.black);
+            g2.drawLine(i, D.height - j, i + 15, D.height - j);
+        }
+        return;
+
+    }
+
+    public void nextStep(ArrayList<SmartCar> Cars, double time) {
+        for (SmartCar thiscar : cars) {
+
+            double d1 = time * thiscar.vel * Math.cos(thiscar.theta);
+            thiscar.x += d1;
+            double d2 = time * thiscar.vel * Math.sin(thiscar.theta);
+            thiscar.y += d2;
+
+
+
+            thiscar.phi = (0.15707963267948966D * thiscar.phi);
+
+            double d3 = time * thiscar.phi;
+
+            thiscar.theta += d3;
+            thiscar.theta = angleFix(thiscar.theta);
+
+            this.t += time;
+
+            thiscar.distMoved += Math.sqrt(d1 * d1 + d2 * d2);
+        }
+    }
+
+
+    public double getDistanceMoved() {
+        return 0;
+    }
+
+    double angleFix(double theta) {
+        if (theta < 0.0D) {
+            while (theta < 0.0D) {
+                theta += 6.283185307179586D;
+            }
+        }
+        if (theta > 6.283185307179586D) {
+            while (theta > 6.283185307179586D) {
+                theta -= 6.283185307179586D;
+            }
+        }
+        return theta;
+    }
+
+    public double getTime() {
+        return 0;
+    }
 }
-  

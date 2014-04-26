@@ -7,11 +7,12 @@ import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 
 public class Road {
+
 	int numCars = 0;
 	int numLanes =2;
 	double laneWidth;
 	double speedLimit; //As a simulator value (0-10)
-	ArrayList<SmartCar> cars;
+	ArrayList<SmartCar> cars = new ArrayList<SmartCar>();
 	boolean DEBUG;
 	double roadTop;
 	double roadBottom;
@@ -60,13 +61,36 @@ public class Road {
 	}
 
 	/**
-	 * draws the road
-	 * @param g2 [description]
-	 * @param D  [description]
-	 */
-	public void draw (Graphics2D g2, Dimension D) {
+     * adds a car to the road
+     * @param car  [description]
+     * @param lane [description]
+     */
+    public void removeCars() {
+        cars.clear();
+    }
 
-	}
+	/**
+     * draws the road and the lanes
+     * @param g2 [description]
+     * @param D  [description]
+     */
+    public void draw (Graphics2D g2, Dimension D) {
+
+        roadTop = D.height / numLanes;
+        roadBottom = roadTop + (numLanes * laneWidth);
+
+        g2.setColor (Color.gray);
+        g2.fillRect (0, (int)roadTop, D.width, (int)(numLanes * laneWidth));
+
+        Stroke drawingStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] {9}, 0);
+        for (int i = 1; i < numLanes; i++) {
+            Line2D line = new Line2D.Double(0, (int)(i * laneWidth + roadTop), D.width, (int)(i * laneWidth + roadTop));
+            g2.setColor (Color.yellow);
+            g2.setStroke(drawingStroke);
+            g2.draw(line);
+        }
+
+    }
 
 	/**
 	 * [getX description]
@@ -241,3 +265,4 @@ public class Road {
 
 }
 
+>>>>>>> ec18995d1d760666b711300188a4cad5ae47d232

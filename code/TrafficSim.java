@@ -8,26 +8,33 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 
 
-public class TrafficSim extends JPanel{
+public class TrafficSim extends JPanel {
     //traffic details
-    int maxNumCars = 1;
     double speedLimit = 5.0;
-    int numLanes = 2;
-    double laneWidth = 10;
+    int numLanes = 5;
+    int maxNumCars = numLanes;
+    double laneWidth = 30;
 
     //SmartCarSimulator carSim = null;
     //Arraylist<SmartCar> cars;
     Road roadControl;
+    SmartCarSimulator carSim = null;
+    ArrayList<SmartCar> cars;
 
     // Animation stuff.
     Thread currentThread;
     boolean isPaused = false;
 
+    double initx, inity, initTheta;
+
+    // The time step. 0.1 is a large value. We might reduce it
+    // later and also reduce the sleeptime.
+    double delT = 0.1;
 
     String topMessage = "";
 
     public void TrafficSim() {
-        
+
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -46,18 +53,19 @@ public class TrafficSim extends JPanel{
         AffineTransform savedTransform = g2.getTransform ();
 
         if (roadControl != null) {
+            //System.out.println("Draw Road");
             roadControl.draw(g2, D);
         }
 
-        //if (carSim != null) {
-          //  carSim.draw(g2, D);
-        //}
+        if (carSim != null) {
+            carSim.draw(g2, D);
+        }
 
 
         g2.setTransform (savedTransform);
         // Top msg.
         g.setColor (Color.black);
-        
+
         g.drawString (topMessage, 20, 30);
     }
 
@@ -70,9 +78,17 @@ public class TrafficSim extends JPanel{
     void reset () {
 
         //setScene ();
-
+        roadControl.removeCars();
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
+
+        for(int i =0; i<maxNumCars; i++) {
+            initx = 0;
+            inity = D.height - (roadControl.roadTop + i*laneWidth+(laneWidth/2));
+            initTheta = 0;
+            SmartCar newCar = new SmartCar(initx, inity, initTheta);
+            roadControl.add(newCar);
+        }
 
         // This must follow setScene() and sensors.
         setCar ();
@@ -89,8 +105,8 @@ public class TrafficSim extends JPanel{
         //calls getCars() from road
         //creates sim from car list
         //creates controllers from car list
-        //cars = roadControl.getCars();
-        //carSim = new SmartCarSimulator(cars);
+        cars = roadControl.getCars();
+        carSim = new SmartCarSimulator(cars, roadControl);
 
     }
 
@@ -159,6 +175,9 @@ public class TrafficSim extends JPanel{
 
         // foreach car...
         //carControl.move ();
+        for (SmartCar thiscar : cars) {
+            thiscar.move();
+        }
 
         //checkControls ();
 
@@ -167,11 +186,11 @@ public class TrafficSim extends JPanel{
         // get the new position.
         //
         //pass cars to next step
-        //carSim.nextStep (Cars);
+        carSim.nextStep (cars, delT);
 
         //remove car if goes too far
 
-        return true;
+        return false;
     }
 
 
@@ -226,11 +245,10 @@ public class TrafficSim extends JPanel{
         return panel;
     }
 
-    public void loadController(){
+    public void loadController() {
 
         roadControl = new Road(maxNumCars, speedLimit, numLanes, laneWidth);
-        //SmartCar newCar = newSmartCar(initx, inity, initTheta);
-        //roadControl.add(newCar);
+
     }
 
     void makeFrame () {
@@ -238,7 +256,7 @@ public class TrafficSim extends JPanel{
         frame.setSize (1000, 700);
         frame.setTitle ("Car GUI and Simulator");
         Container cPane = frame.getContentPane();
-        //cPane.add (makeBottomPanel(), BorderLayout.SOUTH);
+        cPane.add (makeControlPanel(), BorderLayout.SOUTH);
         cPane.add (this, BorderLayout.CENTER);
         loadController();
         frame.setVisible (true);
