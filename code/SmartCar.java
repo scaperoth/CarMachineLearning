@@ -20,6 +20,7 @@ public class SmartCar {
 	double theta;
 	int lane;
 	int newlane;
+	double distMoved;
 	boolean changingLanes;
 	Road road;
 
@@ -52,7 +53,10 @@ public class SmartCar {
 		this.theta = initTheta;
 		this.lane = lane;
 		this.road = thisRoad;
+		this.y = road.getLaneCenter(lane);
+		
 		this.DEBUG = debug;
+		distMoved = 0.0;
 	}
 
 	/**
