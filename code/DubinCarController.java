@@ -7,7 +7,7 @@ import java.awt.*;
 public class DubinCarController implements CarController {
 
     // Angular velocities.
-    double mu1=0, mu2=1;
+    double phi, vel;
     ArrayList<Rectangle2D.Double> obstacles;
 
     // Are the two controls accelerators?
@@ -42,6 +42,23 @@ public class DubinCarController implements CarController {
     public void draw (Graphics2D g2, Dimension D)
     {
     }
-    
+
+    /**
+     * changes lanes for car
+     * returns false if not possible (or fails)
+     * @return [description]
+     */
+    public boolean changeLanes(){
+        return true;
+    }
+
+    /**
+     * adjust to speed to parameter
+     * @param vel [description]
+     */
+    public void adjustSpeed(double vel){
+
+    }    
+
 
 }

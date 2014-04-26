@@ -23,7 +23,7 @@ public class BasicSensorPack extends GroundTruthSensor {
     
 
 
-    public void init (double initX, double initY, double initTheta, ArrayList<Rectangle2D.Double> obstacles)
+    public void init (double initX, double initY, double initTheta)
     {
         x = initX;
         y = initY;
