@@ -36,7 +36,7 @@ public class SmartCar {
         this.sensors = sensors;
         this.lane = lane;
         this.vel = 10;
-        this.theta = 0;
+        this.phi = 0;
     }
 
     /**
@@ -62,9 +62,9 @@ public class SmartCar {
         vel = 10;
         // This is where you adjust the control values.
         //
-        if (changinglanes) {
-            checkChangingLanes;
-        } else {
+        //if (changinglanes) {
+            //checkChangingLanes;
+       // } else {
             //everything else
             //
             // logic:
@@ -79,7 +79,7 @@ public class SmartCar {
             //
             //do i need to change lanes to stop speeder?
             //
-        }
+        //}
 
     }
 
