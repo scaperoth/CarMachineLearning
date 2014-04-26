@@ -16,6 +16,7 @@ public class Road {
 	boolean DEBUG;
 	double roadTop;
 	double roadBottom;
+	double windowHeight;
 
 	/**
 	 * inits variables for road
@@ -24,11 +25,10 @@ public class Road {
 	 * @param numLanes   [description]
 	 * @param laneWidth  [description]
 	 */
-	public Road(double speedLimit, int numLanes, double laneWidth, double sLimit, boolean debug){
+	public Road(double speedLimit, int numLanes, double laneWidth, boolean debug){
 		this.speedLimit = speedLimit;
 		this.numLanes = numLanes;
 		this.laneWidth = laneWidth;
-		this.speedLimit = sLimit;
 		this.DEBUG = debug;
 	}
 
@@ -75,8 +75,8 @@ public class Road {
      * @param D  [description]
      */
     public void draw (Graphics2D g2, Dimension D) {
-
-        roadTop = D.height / numLanes;
+    	windowHeight = D.height;
+        roadTop =windowHeight / numLanes;
         roadBottom = roadTop + (numLanes * laneWidth);
 
         g2.setColor (Color.gray);
@@ -191,7 +191,7 @@ public class Road {
 			if (DEBUG) System.out.println("getLaneCenter failed: Lane does not exist");
 			return -1;
 		}
-		else return (roadTop + 50*lane-25);
+		else return windowHeight-(roadTop + (lane-1)*laneWidth+(laneWidth/2));
 	}
 
 	/**
@@ -265,4 +265,3 @@ public class Road {
 
 }
 
->>>>>>> ec18995d1d760666b711300188a4cad5ae47d232

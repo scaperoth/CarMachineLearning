@@ -13,6 +13,8 @@ public class TrafficSim extends JPanel {
     double speedLimit = 5.0;
     int numLanes = 5;
     int maxNumCars = numLanes;
+    double startSpeed = 10;
+    boolean DEBUG = false;
     double laneWidth = 30;
 
     //SmartCarSimulator carSim = null;
@@ -82,11 +84,8 @@ public class TrafficSim extends JPanel {
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
 
-        for(int i =0; i<maxNumCars; i++) {
-            initx = 0;
-            inity = D.height - (roadControl.roadTop + i*laneWidth+(laneWidth/2));
-            initTheta = 0;
-            SmartCar newCar = new SmartCar(initx, inity, initTheta);
+        for(int i =1; i<=numLanes; i++) {
+            SmartCar newCar = new SmartCar(i, initTheta, startSpeed, roadControl, DEBUG);
             roadControl.add(newCar);
         }
 
@@ -247,7 +246,7 @@ public class TrafficSim extends JPanel {
 
     public void loadController() {
 
-        roadControl = new Road(maxNumCars, speedLimit, numLanes, laneWidth);
+        roadControl = new Road(speedLimit, numLanes, laneWidth, DEBUG);
 
     }
 
