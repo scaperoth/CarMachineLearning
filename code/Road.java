@@ -9,7 +9,7 @@ public class Road {
 	int numLanes =2;
 	double laneWidth;
 	double speedLimit;
-	ArrayList<SmartCar> cars;
+	//ArrayList<SmartCar> cars;
 
 	/**
 	 * inits variables for road
@@ -18,7 +18,7 @@ public class Road {
 	 * @param numLanes   [description]
 	 * @param laneWidth  [description]
 	 */
-	public void Road(int numCars, double speedLimit, int numLanes, double laneWidth){
+	public Road(int numCars, double speedLimit, int numLanes, double laneWidth){
 		this.numCars = numCars;
 		this.speedLimit = speedLimit;
 		this.numLanes = numLanes;
@@ -31,7 +31,7 @@ public class Road {
 	 * @param lane [description]
 	 */
 	public void add(SmartCar car){	
-		cars.add(car);
+		//cars.add(car);
 	}
 
 	/**
@@ -58,8 +58,8 @@ public class Road {
      * @return     [description]
      */
     public double getX(SmartCar Car){
-
-    }
+        return 0;
+    }   
 
     /**
      * [getY description]
@@ -67,7 +67,7 @@ public class Road {
      * @return     [description]
      */
     public double getY(SmartCar Car){
-
+        return 0;   
     }
 
     /**
@@ -76,7 +76,7 @@ public class Road {
      * @return     [description]
      */
     public double getVel(SmartCar Car){
-
+        return 0;
     }
 
     /**
@@ -85,7 +85,7 @@ public class Road {
      * @return     [description]
      */
     public double getAccel(SmartCar Car){
-
+        return 0;
     }
 
     /**
@@ -94,7 +94,7 @@ public class Road {
      * @return     [description]
      */
     public double getTheta(SmartCar Car){
-
+        return 0;
     }
 
     /**
@@ -103,7 +103,7 @@ public class Road {
      * @return     [description]
      */
     public int getLane(SmartCar Car){
-
+        return 0;
     }
 
     /**
@@ -112,7 +112,7 @@ public class Road {
      * @return     [description]
      */
     public double getLaneY(int lane){
-
+        return 0;
     }
 
     /**
@@ -121,17 +121,17 @@ public class Road {
      * @return     [description]
      */
     public double isSpeeding(SmartCar Car){
-    	
+    	return 0;
     }
 
     /**
      * [getCars description]
      * @return [description]
-     */
+     
     public ArrayList<SmartCar> getCars(){
-
+        return ;
     }	
-
+    */
     /**
      * next step method will call to check if offroad
      * @param  x [description]
@@ -139,7 +139,7 @@ public class Road {
      * @return   [description]
      */
     public boolean offRoad (double x, double y) {
-		
+		return false;
     }
 
     /**
@@ -158,7 +158,7 @@ public class Road {
      * @return [description]
      */
     public boolean isChangingToLane(int newlane){
-    	
+    	return false;
 
     }
 }

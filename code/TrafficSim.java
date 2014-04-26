@@ -1,34 +1,33 @@
-
 import java.util.*;
-import java.awt.geom.*;
+import java.text.*;
 import java.awt.*;
+import java.awt.event.*;
+import java.awt.geom.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.border.*;
 
 
-public class TrafficSim implements CarController {
+public class TrafficSim extends JPanel{
     //traffic details
     int maxNumCars = 1;
     double speedLimit = 5.0;
-    double numLanes = 2;
+    int numLanes = 2;
     double laneWidth = 10;
 
-    // Sensors - an instance of SensorPack (created later).
-    SensorPack sensorPack = null;
-
-    ArrayList<Rectangle2D.Double> obstacles;
-
-    // Rectangular axis-aligned obstacles.
-    ArrayList<Rectangle2D.Double> obstacles = new ArrayList<Rectangle2D.Double>();
-
-    SmartCarSimulator carSim = null;
-    Arraylist<SmartCar> cars;
+    //SmartCarSimulator carSim = null;
+    //Arraylist<SmartCar> cars;
     Road roadControl;
 
     // Animation stuff.
     Thread currentThread;
     boolean isPaused = false;
 
-    public void TrafficSim(ArrayList<Rectangle2D.Double> obstacles) {
-        this.obstacles = obstacles;
+
+    String topMessage = "";
+
+    public void TrafficSim() {
+        
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -50,14 +49,15 @@ public class TrafficSim implements CarController {
             roadControl.draw(g2, D);
         }
 
-        if (carSim != null) {
-            carSim.draw(g2, D);
-        }
+        //if (carSim != null) {
+          //  carSim.draw(g2, D);
+        //}
 
 
         g2.setTransform (savedTransform);
         // Top msg.
         g.setColor (Color.black);
+        
         g.drawString (topMessage, 20, 30);
     }
 
@@ -69,7 +69,7 @@ public class TrafficSim implements CarController {
 
     void reset () {
 
-        setScene ();
+        //setScene ();
 
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
@@ -89,9 +89,8 @@ public class TrafficSim implements CarController {
         //calls getCars() from road
         //creates sim from car list
         //creates controllers from car list
-        cars = roadControl.getCars();
-        carSim = new SmartCarSimulator(cars);
-        copControl.init (initcopX, initcopY, initperpX, initperp
+        //cars = roadControl.getCars();
+        //carSim = new SmartCarSimulator(cars);
 
     }
 
@@ -138,7 +137,7 @@ public class TrafficSim implements CarController {
                 }
             }
 
-            topMessage = "Time: " + df.format(carSim.getTime());
+            //topMessage = "Time: " + df.format(carSim.getTime());
             this.repaint ();
 
             try {
@@ -148,7 +147,7 @@ public class TrafficSim implements CarController {
             }
         } //endwhile
 
-        topMessage = "Time: " + df.format(carSim.getTime());
+        //topMessage = "Time: " + df.format(carSim.getTime());
         this.repaint ();
     }
 
@@ -159,20 +158,20 @@ public class TrafficSim implements CarController {
         // In auto mode, the code in the controller does.
 
         // foreach car...
-        carControl.move ();
+        //carControl.move ();
 
-        checkControls ();
+        //checkControls ();
 
 
         // Now that the controls are known, apply them and
         // get the new position.
         //
         //pass cars to next step
-        carSim.nextStep (Cars);
+        //carSim.nextStep (Cars);
 
         //remove car if goes too far
 
-        return done;
+        return true;
     }
 
 
@@ -229,9 +228,9 @@ public class TrafficSim implements CarController {
 
     public void loadController(){
 
-        roadControl = new Road(numCars, speedLimit, numLanes, laneWidth);
-        SmartCar newCar = newSmartCar(initx, inity, initTheta);
-        roadControl.add(newCar);
+        roadControl = new Road(maxNumCars, speedLimit, numLanes, laneWidth);
+        //SmartCar newCar = newSmartCar(initx, inity, initTheta);
+        //roadControl.add(newCar);
     }
 
     void makeFrame () {
@@ -239,7 +238,7 @@ public class TrafficSim implements CarController {
         frame.setSize (1000, 700);
         frame.setTitle ("Car GUI and Simulator");
         Container cPane = frame.getContentPane();
-        cPane.add (makeBottomPanel(), BorderLayout.SOUTH);
+        //cPane.add (makeBottomPanel(), BorderLayout.SOUTH);
         cPane.add (this, BorderLayout.CENTER);
         loadController();
         frame.setVisible (true);
