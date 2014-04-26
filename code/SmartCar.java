@@ -10,6 +10,8 @@ public class SmartCar {
     double acc;       // Acceleration.
     double vel;       // Velocity.
     double phi;       // Steering angle.
+    double x, y, theta;
+    double distMoved;
     int lane;
     int newlane;
     boolean changingLanes;
@@ -31,12 +33,16 @@ public class SmartCar {
      * @param obstacles [description]
      * @param sensors   [description]
      */
-    public void SmartCar (double initX, double initY, double initTheta) {
+    public SmartCar (double initX, double initY, double initTheta) {
         this.obstacles = obstacles;
         this.sensors = sensors;
         this.lane = lane;
         this.vel = 10;
         this.phi = 0;
+        this.x = initX;
+        this.y = initY;
+        this.theta = initTheta;
+        this.distMoved = 0.0;
     }
 
     /**
@@ -127,7 +133,7 @@ public class SmartCar {
     }
 
     public boolean straightenedOut() {
-
+        return true;
     }
 
     /**
