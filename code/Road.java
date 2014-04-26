@@ -5,12 +5,21 @@ import java.awt.*;
 
 
 public class Road {
+	int numCars = 0;
 	int numLanes =2;
 	double laneWidth;
 	double speedLimit;
+	ArrayList<SmartCar> cars;
 
-
-	public void Road(double speedLimit, int numLanes, double laneWidth){
+	/**
+	 * inits variables for road
+	 * @param numCars    [description]
+	 * @param speedLimit [description]
+	 * @param numLanes   [description]
+	 * @param laneWidth  [description]
+	 */
+	public void Road(int numCars, double speedLimit, int numLanes, double laneWidth){
+		this.numCars = numCars;
 		this.speedLimit = speedLimit;
 		this.numLanes = numLanes;
 		this.laneWidth = laneWidth;
@@ -21,9 +30,8 @@ public class Road {
 	 * @param car  [description]
 	 * @param lane [description]
 	 */
-	public void add(SmartCar car, int lane){	
-		//loop
-		//create car controller and simulator
+	public void add(SmartCar car){	
+		cars.add(car);
 	}
 
 	/**
