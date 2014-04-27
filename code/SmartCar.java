@@ -32,6 +32,7 @@ public class SmartCar {
     double width = 34;
     double height = 16;
 
+    int color = 1;
 
     boolean DEBUG;
 
@@ -40,6 +41,8 @@ public class SmartCar {
 
     // Is the first control an accelerator?
     boolean isAccelModel = false;
+
+    UniformRandom random = new UniformRandom();
 
     /**
      * [init description]
@@ -70,6 +73,8 @@ public class SmartCar {
 
         this.DEBUG = debug;
         distMoved = 0.0;
+
+        this.color = random.uniform(0,3);
     }
 
     /**
