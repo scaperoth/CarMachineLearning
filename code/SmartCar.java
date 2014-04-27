@@ -32,14 +32,17 @@ public class SmartCar {
 	double width = 34;
 	double height = 16;
 
+	int color = 1;
 
-	boolean DEBUG;
+    boolean DEBUG;
 
-	ArrayList<Rectangle2D.Double> obstacles;
-	//    SensorPack sensors;
+    ArrayList<Rectangle2D.Double> obstacles;
+    //    SensorPack sensors;
 
-	// Is the first control an accelerator?
-	boolean isAccelModel = false;
+    // Is the first control an accelerator?
+    boolean isAccelModel = false;
+
+    UniformRandom random = new UniformRandom();
 
 	/**
 	 * [init description]
@@ -70,6 +73,8 @@ public class SmartCar {
 
 		this.DEBUG = debug;
 		distMoved = 0.0;
+
+		this.color = random.uniform(0,3);
 	}
 
 	/**
@@ -224,7 +229,7 @@ public class SmartCar {
 				//If function hasn't returned false by this point, lane change is possible
 
 				newlane = lane + deltaLane;
-				this.phi = -1 * deltaLane * ROTATION_RATE;
+				this.phi = deltaLane * ROTATION_RATE;
 				changingLanes = true;
 				return true;
 			}

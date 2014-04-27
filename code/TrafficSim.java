@@ -10,9 +10,9 @@ import javax.swing.border.*;
 
 public class TrafficSim extends JPanel {
     //traffic details
-    double speedLimit = 5.0;
+    double speedLimit = 8.0;
     int numLanes = 2;
-    int maxNumCars = 4;
+    int maxNumCars = 40;
     int numCars = 0;
     double startSpeed = 10;
     boolean DEBUG = true;
@@ -34,8 +34,15 @@ public class TrafficSim extends JPanel {
     // The time step. 0.1 is a large value. We might reduce it
     // later and also reduce the sleeptime.
     double delT = .1;
+    int sleeptime= 10;
     DecimalFormat df = new DecimalFormat("##.##");
     String topMessage = "";
+
+    UniformRandom random = new UniformRandom();
+    double thisTime = 0;
+    double nextWaitTime = 0;
+
+    int isSpeeder = random.uniform(0, 1);
 
     public void TrafficSim() {
 
@@ -81,22 +88,16 @@ public class TrafficSim extends JPanel {
     // Animation
 
     void reset () {
-
         //setScene ();
         roadControl.removeCars();
         numCars = 0;
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
+        thisTime = 0;
+        nextWaitTime = 0;
 
-        //for(int i =1; i<=maxNumCars; i++) {
-        SmartCar newCar = new SmartCar(1, initTheta, 8, roadControl, DEBUG, false);
-        roadControl.add(newCar);
-        numCars++;
-        SmartCar newCar2 = new SmartCar(2, initTheta, 8, roadControl, DEBUG, false);
-        roadControl.add(newCar2);
-        numCars++;
-        //}
-
+        //set first car...  
+        addNewCar(0);
 
         // This must follow setScene() and sensors.
         setCar ();
@@ -160,25 +161,16 @@ public class TrafficSim extends JPanel {
                     break;
                 }
             }
-            double time = carSim.getTime() / 20;
+            double time = carSim.getTime()/(200/sleeptime) ;
             topMessage = "Time: " + df.format(time);
             if (numCars < maxNumCars) {
+                addNewCar(time);
 
-                if(time > 4.5){
-                    
-                    SmartCar newCar3 = new SmartCar(2, initTheta, startSpeed, roadControl, DEBUG, true);
-                    roadControl.add(newCar3);
-                    numCars++;
-                }else if (time > 1) {
-                    SmartCar newCar4 = new SmartCar(1, initTheta, startSpeed, roadControl, DEBUG, true);
-                    roadControl.add(newCar4);
-                    numCars++;
-                }
             }
             this.repaint ();
 
             try {
-                Thread.sleep (10);
+                Thread.sleep (sleeptime);
             } catch (InterruptedException e) {
                 break;
             }
@@ -188,6 +180,24 @@ public class TrafficSim extends JPanel {
         this.repaint ();
     }
 
+
+    public void addNewCar(double time) {
+        if (time >= thisTime + nextWaitTime) {
+
+            SmartCar newCar;
+            if (isSpeeder == 0) {
+                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, random.uniform(5,speedLimit), roadControl, DEBUG, false);
+            } else {
+                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, 10, roadControl, DEBUG, true);
+            }
+            roadControl.add(newCar);
+            numCars++;
+            nextWaitTime = random.uniform(0.5, 1.5);
+            thisTime = time;
+            isSpeeder = random.uniform(0, 1);
+        }
+
+    }
 
 
     boolean nextStep () {

@@ -78,7 +78,7 @@ public class SmartCarSimulator {
             if (thiscar.x < D.width) {
 
                 g2.setTransform(localAffineTransform1);
-                BufferedImage image = images.get(0);
+                BufferedImage image = images.get(thiscar.color);
                 g.drawImage(image, i-(int)thiscar.width/2 , D.height - j-(int)(thiscar.height/2), null);
 
                 /**g2.setColor(Color.cyan);
@@ -101,22 +101,23 @@ public class SmartCarSimulator {
 
     }
 
-    public void nextStep(double time) {
+    public void nextStep(double deltaTime) {
+
+            this.t += deltaTime;
         for (SmartCar thiscar : cars) {
 
-            double d1 = time * thiscar.vel * Math.cos(thiscar.theta);
+            double d1 = deltaTime * thiscar.vel * Math.cos(thiscar.theta);
             thiscar.x += d1;
-            double d2 = time * thiscar.vel * Math.sin(thiscar.theta);
+            double d2 = deltaTime * thiscar.vel * Math.sin(thiscar.theta);
             thiscar.y += d2;
 
             thiscar.phi = (0.15707963267948966D * thiscar.phi);
 
-            double d3 = time * thiscar.phi;
+            double d3 = deltaTime * thiscar.phi;
 
             thiscar.theta += d3;
             thiscar.theta = angleFix(thiscar.theta);
 
-            this.t += time;
 
             thiscar.distMoved += Math.sqrt(d1 * d1 + d2 * d2);
 
