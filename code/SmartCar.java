@@ -229,7 +229,7 @@ public class SmartCar {
 				//If function hasn't returned false by this point, lane change is possible
 
 				newlane = lane + deltaLane;
-				this.phi = -1 * deltaLane * ROTATION_RATE;
+				this.phi = deltaLane * ROTATION_RATE;
 				changingLanes = true;
 				return true;
 			}
