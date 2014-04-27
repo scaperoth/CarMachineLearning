@@ -1,6 +1,11 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.awt.Graphics2D;
+import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
@@ -22,12 +27,26 @@ public class SmartCarSimulator {
     ArrayList<Integer> removelist = new ArrayList<Integer>();
     Road road;
     ArrayList<SmartCar> cars;
+    int numImages = 4;
     double t;
+
+    UniformRandom random = new UniformRandom();
+
+    ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
 
     public SmartCarSimulator(ArrayList<SmartCar> cars, Road road) {
         this.cars = cars;
         this.road = road;
         this.t = 0.0;
+
+        for (int i = 0; i < numImages; i++) {
+            try {
+                images.add(ImageIO.read(new File("images/car" + (i+1) + ".png")));
+            } catch (IOException ex) {
+                // handle exception...
+            }
+        }
+
         //override constructor
         //creating a local list of cars
     }
@@ -50,18 +69,24 @@ public class SmartCarSimulator {
     }
 
 
-    public void draw(Graphics2D g2, Dimension D) {
+    public void draw(Graphics2D g2, Dimension D, Graphics g) {
         for (SmartCar thiscar : cars) {
             int i = (int)thiscar.x;
             int j = (int)thiscar.y;
             AffineTransform localAffineTransform1 = AffineTransform.getRotateInstance(-thiscar.theta, i, D.height - j);
 
             if (thiscar.x < D.width) {
+
                 g2.setTransform(localAffineTransform1);
-                g2.setColor(Color.cyan);
-                g2.fillOval(i - 15, D.height - j - 8, 30, 16);
+                BufferedImage image = images.get(0);
+                g.drawImage(image, i-(int)thiscar.width/2 , D.height - j-(int)(thiscar.height/2), null);
+
+                /**g2.setColor(Color.cyan);
+                  g2.fillOval(i - 15, D.height - j - 8, 30, 16);
                 g2.setColor(Color.black);
                 g2.drawLine(i, D.height - j, i + 15, D.height - j);
+                 */
+
             } else {
                 removelist.add(cars.indexOf(thiscar));
             }
@@ -115,6 +140,10 @@ public class SmartCarSimulator {
             }
         }
         return theta;
+    }
+
+    public void resetClock(){
+        this.t = 0;
     }
 
     public double getTime() {
