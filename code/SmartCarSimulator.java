@@ -118,6 +118,6 @@ public class SmartCarSimulator {
     }
 
     public double getTime() {
-        return 0;
+        return this.t;
     }
 }

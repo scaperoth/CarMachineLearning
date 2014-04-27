@@ -12,9 +12,9 @@ public class TrafficSim extends JPanel {
     //traffic details
     double speedLimit = 5.0;
     int numLanes = 2;
-    int maxNumCars = 1;
+    int maxNumCars = 2;
     double startSpeed = 10;
-    boolean DEBUG = false;
+    boolean DEBUG = true;
     double laneWidth = 30;
 
     //SmartCarSimulator carSim = null;
@@ -32,8 +32,8 @@ public class TrafficSim extends JPanel {
 
     // The time step. 0.1 is a large value. We might reduce it
     // later and also reduce the sleeptime.
-    double delT = 0.1;
-
+    double delT = .1;
+    DecimalFormat df = new DecimalFormat("##.##");
     String topMessage = "";
 
     public void TrafficSim() {
@@ -154,11 +154,11 @@ public class TrafficSim extends JPanel {
                 }
             }
 
-            //topMessage = "Time: " + df.format(carSim.getTime());
+            topMessage = "Time: " + df.format(carSim.getTime());
             this.repaint ();
 
             try {
-                Thread.sleep (200);
+                Thread.sleep (50);
             } catch (InterruptedException e) {
                 break;
             }
@@ -178,7 +178,9 @@ public class TrafficSim extends JPanel {
         //carControl.move ();
         for (SmartCar thiscar : cars) {
             thiscar.move();
-        }
+        }   
+
+
 
         //checkControls ();
 
