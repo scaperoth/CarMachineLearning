@@ -11,10 +11,10 @@ import javax.swing.border.*;
 public class TrafficSim extends JPanel {
     //traffic details
     double speedLimit = 5.0;
-    int numLanes = 5;
-    int maxNumCars = numLanes;
+    int numLanes = 2;
+    int maxNumCars = 2;
     double startSpeed = 10;
-    boolean DEBUG = false;
+    boolean DEBUG = true;
     double laneWidth = 30;
 
     //SmartCarSimulator carSim = null;
@@ -26,13 +26,14 @@ public class TrafficSim extends JPanel {
     // Animation stuff.
     Thread currentThread;
     boolean isPaused = false;
+    double javaWidth;
 
     double initx, inity, initTheta;
 
     // The time step. 0.1 is a large value. We might reduce it
     // later and also reduce the sleeptime.
-    double delT = 0.1;
-
+    double delT = .1;
+    DecimalFormat df = new DecimalFormat("##.##");
     String topMessage = "";
 
     public void TrafficSim() {
@@ -44,11 +45,12 @@ public class TrafficSim extends JPanel {
 
     public void paintComponent (Graphics g) {
         super.paintComponent (g);
-
+        
         Graphics2D g2 = (Graphics2D) g;
 
-        // Clear.
+        // Clear.   
         Dimension D = this.getSize();
+        javaWidth = D.width;
         g.setColor (Color.white);
         g.fillRect (0, 0, D.width, D.height);
 
@@ -84,7 +86,7 @@ public class TrafficSim extends JPanel {
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
 
-        for(int i =1; i<=numLanes; i++) {
+        for(int i =1; i<=maxNumCars; i++) {
             SmartCar newCar = new SmartCar(i, initTheta, startSpeed, roadControl, DEBUG);
             roadControl.add(newCar);
         }
@@ -152,11 +154,11 @@ public class TrafficSim extends JPanel {
                 }
             }
 
-            //topMessage = "Time: " + df.format(carSim.getTime());
+            topMessage = "Time: " + df.format(carSim.getTime());
             this.repaint ();
 
             try {
-                Thread.sleep (200);
+                Thread.sleep (50);
             } catch (InterruptedException e) {
                 break;
             }
@@ -176,7 +178,9 @@ public class TrafficSim extends JPanel {
         //carControl.move ();
         for (SmartCar thiscar : cars) {
             thiscar.move();
-        }
+        }   
+
+
 
         //checkControls ();
 
@@ -185,7 +189,7 @@ public class TrafficSim extends JPanel {
         // get the new position.
         //
         //pass cars to next step
-        carSim.nextStep (cars, delT);
+        carSim.nextStep (delT);
 
         //remove car if goes too far
 
