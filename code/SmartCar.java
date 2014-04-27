@@ -7,7 +7,7 @@ import java.awt.*;
 public class SmartCar {
     public final double CAR_MIN_SPACING = 10;
     public final double THETA_THRESHOLD = .1;
-    public final double ROTATION_RATE = 35;
+    public final double ROTATION_RATE = 25;
     public final double TURNING_ANGLE_DEGREES = 60;
     public final double ROAD_Y_THRESHOLD = 1;
     public final double STRAIGHTEN_ADJUSTMENT = 0;
