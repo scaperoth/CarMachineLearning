@@ -87,10 +87,10 @@ public class TrafficSim extends JPanel {
         Dimension D = this.getSize();
 
         for(int i =1; i<=maxNumCars; i++) {
-
-            SmartCar newCar = new SmartCar(i, initTheta, startSpeed, roadControl, DEBUG);
+            SmartCar newCar = new SmartCar(i, initTheta, startSpeed, roadControl, DEBUG, false);
             roadControl.add(newCar);
         }
+        
 
         // This must follow setScene() and sensors.
         setCar ();

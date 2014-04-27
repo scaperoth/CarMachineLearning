@@ -11,6 +11,7 @@ public class SmartCar {
     public final double TURNING_ANGLE_DEGREES = 60;
     public final double ROAD_Y_THRESHOLD = 1;
     public final double STRAIGHTEN_ADJUSTMENT = 0;
+    public final double DECEL_RATE = .66;
 
     // The two controls: either (vel,phi) or (acc,phi)
     double acc;       // Acceleration.
@@ -21,10 +22,13 @@ public class SmartCar {
     double theta;
     int lane;
     int newlane;
+    double targetVel; //Velocity car wants to maintain
     double distMoved;
     boolean changingLanes;
     boolean isStraightening;
     Road road;
+    boolean isSpeeder;
+
 
     boolean DEBUG;
 
@@ -45,11 +49,11 @@ public class SmartCar {
      * @param obstacles [description]
      * @param sensors   [description]
      */
-    public SmartCar (int lane, double initTheta, double startSpeed, Road thisRoad, boolean debug) {
+    public SmartCar (int lane, double initTheta, double startSpeed, Road thisRoad, boolean debug, boolean isSpeeder) {
         //        this.obstacles = obstacles;
         //        this.sensors = sensors;
         //        this.lane = lane;
-        this.vel = startSpeed;
+        this.vel = this.targetVel = startSpeed;
         this.phi = 0;
         this.x = 0;
         this.theta = initTheta;
@@ -84,8 +88,6 @@ public class SmartCar {
 
 
     public void move () {
-
-
         if (changingLanes) checkChangingLanes();
         else if (isStraightening) {
             //If straightened out, stop rotating
@@ -97,6 +99,29 @@ public class SmartCar {
         //If not changing lanes or straightening, do logic
         else {
             phi = 0;
+            
+            if (isSpeeder) {
+            	//Speeder behaves differently than law abiding cars
+            	
+            	//If about to hit car, first try to change lanes to get by
+            	if (tooCloseToCar()) {
+            		if (!changeLanes(true)) {
+            			if(!changeLanes(false)) {
+            				//If unable to change lanes (both left and right return false), slow down
+            				vel = vel*DECEL_RATE;
+            			}
+            		}
+            	}
+            	//If not about to hit car, return to targetVelocity
+            	else vel = targetVel;
+            }
+            //If not speed, first check if about to hit car
+            else {
+            	//Check if about to hit car. If so, slow down
+            	if (tooCloseToCar()) vel = vel*DECEL_RATE;
+            	//CHECK HERE FOR A SPEEDER
+            	else vel = targetVel;
+            }
         }
 
 
