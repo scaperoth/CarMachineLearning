@@ -78,8 +78,8 @@ public class SmartCarSimulator {
             if (thiscar.x < D.width) {
 
                 g2.setTransform(localAffineTransform1);
-                BufferedImage image = images.get();
-                g.drawImage(image, i , D.height - j-8, null);
+                BufferedImage image = images.get(0);
+                g.drawImage(image, i-(int)thiscar.width/2 , D.height - j-(int)(thiscar.height/2), null);
 
                 /**g2.setColor(Color.cyan);
                   g2.fillOval(i - 15, D.height - j - 8, 30, 16);
@@ -140,6 +140,10 @@ public class SmartCarSimulator {
             }
         }
         return theta;
+    }
+
+    public void resetClock(){
+        this.t = 0;
     }
 
     public double getTime() {

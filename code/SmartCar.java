@@ -5,7 +5,7 @@ import java.awt.*;
 
 
 public class SmartCar {
-    public final double CAR_MIN_SPACING = 10;
+    public final double CAR_MIN_SPACING = 40;
     public final double THETA_THRESHOLD = .1;
     public final double ROTATION_RATE = 25;
     public final double TURNING_ANGLE_DEGREES = 60;
@@ -28,6 +28,9 @@ public class SmartCar {
     boolean isStraightening;
     Road road;
     boolean isSpeeder;
+
+    double width = 34;
+    double height = 16;
 
 
     boolean DEBUG;
@@ -63,6 +66,7 @@ public class SmartCar {
 
         this.isStraightening = false;
         this.changingLanes = false;
+        this.isSpeeder = isSpeeder;
 
         this.DEBUG = debug;
         distMoved = 0.0;
@@ -99,28 +103,33 @@ public class SmartCar {
         //If not changing lanes or straightening, do logic
         else {
             phi = 0;
-            
+
             if (isSpeeder) {
-            	//Speeder behaves differently than law abiding cars
-            	
-            	//If about to hit car, first try to change lanes to get by
-            	if (tooCloseToCar()) {
-            		if (!changeLanes(true)) {
-            			if(!changeLanes(false)) {
-            				//If unable to change lanes (both left and right return false), slow down
-            				vel = vel*DECEL_RATE;
-            			}
-            		}
-            	}
-            	//If not about to hit car, return to targetVelocity
-            	else vel = targetVel;
+                //Speeder behaves differently than law abiding cars
+
+                //If about to hit car, first try to change lanes to get by
+                if (tooCloseToCar()) {
+                    if (!changeLanes(true)) {
+                        if (!changeLanes(false)) {
+                            //If unable to change lanes (both left and right return false), slow down
+                            if (DEBUG) System.out.println("Speeder slowing down");
+
+                            vel = vel * DECEL_RATE;
+                        }
+                    }
+                }
+                //If not about to hit car, return to targetVelocity
+                else vel = targetVel;
             }
             //If not speed, first check if about to hit car
             else {
-            	//Check if about to hit car. If so, slow down
-            	if (tooCloseToCar()) vel = vel*DECEL_RATE;
-            	//CHECK HERE FOR A SPEEDER
-            	else vel = targetVel;
+                //Check if about to hit car. If so, slow down
+                if (tooCloseToCar()) {
+                    if (DEBUG) System.out.println("Law abider slowing down");
+                    vel = vel * DECEL_RATE;
+                }
+                //CHECK HERE FOR A SPEEDER
+                else vel = targetVel;
             }
         }
 
@@ -206,6 +215,7 @@ public class SmartCar {
             changingLanes = true;
             return true;
         }
+        if (DEBUG) System.out.println("Unable to change lanes: Car is currently changing or straightening");
         return false;
     }
 
