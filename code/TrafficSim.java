@@ -11,8 +11,8 @@ import javax.swing.border.*;
 public class TrafficSim extends JPanel {
     //traffic details
     double speedLimit = 5.0;
-    int numLanes = 5;
-    int maxNumCars = numLanes;
+    int numLanes = 2;
+    int maxNumCars = 1;
     double startSpeed = 10;
     boolean DEBUG = false;
     double laneWidth = 30;
@@ -26,6 +26,7 @@ public class TrafficSim extends JPanel {
     // Animation stuff.
     Thread currentThread;
     boolean isPaused = false;
+    double javaWidth;
 
     double initx, inity, initTheta;
 
@@ -44,11 +45,12 @@ public class TrafficSim extends JPanel {
 
     public void paintComponent (Graphics g) {
         super.paintComponent (g);
-
+        
         Graphics2D g2 = (Graphics2D) g;
 
-        // Clear.
+        // Clear.   
         Dimension D = this.getSize();
+        javaWidth = D.width;
         g.setColor (Color.white);
         g.fillRect (0, 0, D.width, D.height);
 
@@ -84,7 +86,7 @@ public class TrafficSim extends JPanel {
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
 
-        for(int i =1; i<=numLanes; i++) {
+        for(int i =1; i<=maxNumCars; i++) {
             SmartCar newCar = new SmartCar(i, initTheta, startSpeed, roadControl, DEBUG);
             roadControl.add(newCar);
         }
@@ -185,7 +187,7 @@ public class TrafficSim extends JPanel {
         // get the new position.
         //
         //pass cars to next step
-        carSim.nextStep (cars, delT);
+        carSim.nextStep (delT);
 
         //remove car if goes too far
 

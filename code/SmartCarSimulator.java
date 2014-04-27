@@ -19,7 +19,7 @@ public class SmartCarSimulator {
     double d = 4.0D;
     double S = 30.0D;
     double L = 40.0D;
-
+    ArrayList<Integer> removelist = new ArrayList<Integer>();
     Road road;
     ArrayList<SmartCar> cars;
     double t;
@@ -56,25 +56,33 @@ public class SmartCarSimulator {
             int j = (int)thiscar.y;
             AffineTransform localAffineTransform1 = AffineTransform.getRotateInstance(-thiscar.theta, i, D.height - j);
 
-            g2.setTransform(localAffineTransform1);
-            g2.setColor(Color.cyan);
-            g2.fillOval(i - 15, D.height - j - 8, 30, 16);
-            g2.setColor(Color.black);
-            g2.drawLine(i, D.height - j, i + 15, D.height - j);
+            if (thiscar.x < D.width) {
+                g2.setTransform(localAffineTransform1);
+                g2.setColor(Color.cyan);
+                g2.fillOval(i - 15, D.height - j - 8, 30, 16);
+                g2.setColor(Color.black);
+                g2.drawLine(i, D.height - j, i + 15, D.height - j);
+            } else {
+                removelist.add(cars.indexOf(thiscar));
+            }
+
         }
+
+        for (Integer i : removelist) {
+            cars.remove(i);
+        }
+
         return;
 
     }
 
-    public void nextStep(ArrayList<SmartCar> Cars, double time) {
+    public void nextStep(double time) {
         for (SmartCar thiscar : cars) {
 
             double d1 = time * thiscar.vel * Math.cos(thiscar.theta);
             thiscar.x += d1;
             double d2 = time * thiscar.vel * Math.sin(thiscar.theta);
             thiscar.y += d2;
-
-
 
             thiscar.phi = (0.15707963267948966D * thiscar.phi);
 
@@ -86,6 +94,7 @@ public class SmartCarSimulator {
             this.t += time;
 
             thiscar.distMoved += Math.sqrt(d1 * d1 + d2 * d2);
+
         }
     }
 
