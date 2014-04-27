@@ -10,6 +10,7 @@ public class SmartCar {
 	public final double ROTATION_RATE = 10;
 	public final double TURNING_ANGLE_DEGREES = 60;
 	public final double ROAD_Y_THRESHOLD = 1;
+	public final double STRAIGHTEN_ADJUSTMENT = 0; 
 
 	// The two controls: either (vel,phi) or (acc,phi)
 	double acc;       // Acceleration.
@@ -22,6 +23,7 @@ public class SmartCar {
 	int newlane;
 	double distMoved;
 	boolean changingLanes;
+	boolean isStraightening;
 	Road road;
 
 	boolean DEBUG;
@@ -55,6 +57,9 @@ public class SmartCar {
 		this.road = thisRoad;
 		this.y = road.getLaneCenter(lane);
 		
+		this.isStraightening = false;
+		this.changingLanes = false;
+		
 		this.DEBUG = debug;
 		distMoved = 0.0;
 	}
@@ -79,13 +84,23 @@ public class SmartCar {
 
 
 	public void move () {
-		vel = 10;
-		// This is where you adjust the control values.
-		//
-		//if (changinglanes) {
-		//checkChangingLanes;
-		// } else {
-		//everything else
+		
+		
+		if (changingLanes) checkChangingLanes();
+		else if (isStraightening) {
+			//If straightened out, stop rotating
+			if (straightenedOut()) {
+				phi = 0;
+				isStraightening = false;
+			}
+		}
+		//If not changing lanes or straightening, do logic
+		else {
+			
+		}
+		
+		
+		
 		//
 		// logic:
 		// 
@@ -176,14 +191,22 @@ public class SmartCar {
 			if (secondDist < angleDist) angleDist = secondDist;
 			
 			
-			//INCOMPLETE
-			//If not at turning angle, keep the same phi
-			if (angleDist < THETA_THRESHOLD)
-				
-			if (Math.abs(this.y - road.getLaneCenter(newlane)) < ROAD_Y_THRESHOLD) {
-				//Lane change complete, straighten out
-				//			if(this.theta)
+			//If at turning angle, set phi to zero
+			if (angleDist > THETA_THRESHOLD){
+				phi = 0;
 			}
+			
+			//If at y, rotate back to theta = 0;
+			if (Math.abs(this.y - road.getLaneCenter(newlane) - STRAIGHTEN_ADJUSTMENT) < ROAD_Y_THRESHOLD) {
+				isStraightening = true;
+				changingLanes = false;
+				this.lane = newlane;
+				
+				//Find shortest rotation back to zero (will be the reverse direction it rotated to turn)				
+				if(theta > Math.PI) phi = ROTATION_RATE;
+				else phi = -ROTATION_RATE;		
+			}
+			
 
 			//set phi/vel
 			//if y val is target lane y
