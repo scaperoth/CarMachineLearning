@@ -12,11 +12,12 @@ public class TrafficSim extends JPanel {
     //traffic details
     double speedLimit = 8.0;
     int numLanes = 2;
-    int maxNumCars = 40;
+    int maxNumCars = 100;
     int numCars = 0;
-    double startSpeed = 10;
+    double startSpeed = 10; //Not used????
     boolean DEBUG = true;
     double laneWidth = 30;
+    double speederSpeed = 20;
 
     //SmartCarSimulator carSim = null;
     //Arraylist<SmartCar> cars;
@@ -188,11 +189,11 @@ public class TrafficSim extends JPanel {
             if (isSpeeder == 0) {
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, random.uniform(5,speedLimit), roadControl, DEBUG, false);
             } else {
-                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, 10, roadControl, DEBUG, true);
+                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speederSpeed, roadControl, DEBUG, true);
             }
             roadControl.add(newCar);
             numCars++;
-            nextWaitTime = random.uniform(0.5, 1.5);
+            nextWaitTime = random.uniform(0.1, 1);
             thisTime = time;
             isSpeeder = random.uniform(0, 1);
         }

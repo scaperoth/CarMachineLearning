@@ -116,7 +116,7 @@ public class SmartCar {
 		//Finally, check if about to hit something
 		if (tooCloseToCar()) {
 			//Speeder will first try to change lanes
-			if (isSpeeder) {
+			if (this.isSpeeder) {
 				if (!changeLanes(true)) {
 					if (!changeLanes(false)) {
 						//If unable to change lanes (both left and right return false), slow down
@@ -127,15 +127,12 @@ public class SmartCar {
 			
 			else {
 				//If not speeder, just slow down if near car
-				if (tooCloseToCar()) {
 					if (DEBUG) System.out.println("Law abider slowing down");
 					vel = vel * DECEL_RATE;
-				}
-
 			}
 		}
 		//If not about to hit car, speeder return to targetVelocity
-		else if(isSpeeder) vel = targetVel;
+		else vel = targetVel;
 
 
 
@@ -168,7 +165,7 @@ public class SmartCar {
 			//Car ignores itself
 			if (!c.equals(this)) {
 				//Check if in the same lane
-				if ((this.lane == road.getLane(c)) || ((this.newlane == road.getLane(c)) && this.changingLanes)) {
+				if ((this.lane == road.getLane(c)) || ((this.newlane == road.getLane(c)) && this.changingLanes)|| (this.lane == road.getNewLane(c))) {
 					//Check if car is in front and too close
 					if ((road.getX(c) > this.x) && ((road.getX(c) - this.x) < CAR_MIN_SPACING)) {
 						if (DEBUG) System.out.println("Car detected in front");
@@ -198,7 +195,7 @@ public class SmartCar {
 	 */
 	public boolean changeLanes(boolean left) {
 		int deltaLane = -1; //If turning left, decrease lane
-		if(left) deltaLane = 1; //If right, increase lane
+		if(!left) deltaLane = 1; //If right, increase lane
 
 		if (!changingLanes && !isStraightening) {
 			if (lane == 1 && left) {
@@ -218,7 +215,7 @@ public class SmartCar {
 						//If car from list is in the lane trying to change to
 						if(road.getLane(c)==this.lane+deltaLane) {
 							//Return false if in the range of X coordinates
-							if((road.getX(c) > this.x-width/2) && road.getX(c) < this.x+width/2) {
+							if((road.getX(c) > this.x-1.5*width) && road.getX(c) < this.x+1.5*width) {
 								if(DEBUG) System.out.println("Cannot change lanes left due to car occupying space");
 								return false;
 							}
@@ -229,7 +226,7 @@ public class SmartCar {
 				//If function hasn't returned false by this point, lane change is possible
 
 				newlane = lane + deltaLane;
-				this.phi = deltaLane * ROTATION_RATE;
+				this.phi = -1 * deltaLane * ROTATION_RATE;
 				changingLanes = true;
 				return true;
 			}
