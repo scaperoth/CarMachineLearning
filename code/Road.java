@@ -19,6 +19,8 @@ public class Road {
     double roadBottom;
     double windowHeight;
 
+    Color roadColor = Color.DARK_GRAY;
+    Color lineColor = Color.yellow;
 
     /**
      * inits variables for road
@@ -50,12 +52,12 @@ public class Road {
      * @param car  [description]
      * @param lane [description]
      */
-    public boolean remove(SmartCar car) {
+    public boolean remove(int carIndex) {
         if (cars.isEmpty()) {
             if (DEBUG) System.out.println("Remove car failed: No cars left in arrayList");
             return false;
         } else {
-            cars.remove(car);
+            cars.remove(carIndex);
             numCars--;
             return true;
         }
@@ -77,16 +79,16 @@ public class Road {
      */
     public void draw (Graphics2D g2, Dimension D) {
         windowHeight = D.height;
-        roadTop = windowHeight / numLanes;
+        roadTop =(windowHeight / 2)-((numLanes/2)+laneWidth);
         roadBottom = roadTop + (numLanes * laneWidth);
 
-        g2.setColor (Color.gray);
+        g2.setColor (roadColor);
         g2.fillRect (0, (int)roadTop, D.width, (int)(numLanes * laneWidth));
 
-        Stroke drawingStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] {9}, 0);
+        Stroke drawingStroke = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] {12}, 0);
         for (int i = 1; i < numLanes; i++) {
             Line2D line = new Line2D.Double(0, (int)(i * laneWidth + roadTop), D.width, (int)(i * laneWidth + roadTop));
-            g2.setColor (Color.yellow);
+            g2.setColor (lineColor);
             g2.setStroke(drawingStroke);
             g2.draw(line);
         }
@@ -229,6 +231,15 @@ public class Road {
      */
     public int getNumLanes() {
         return numLanes;
+    }
+
+    /**
+     * [getLane description]
+     * @param  Car [description]
+     * @return     [description]
+     */
+    public int getNumCars() {
+        return cars.size();
     }
 
     /**

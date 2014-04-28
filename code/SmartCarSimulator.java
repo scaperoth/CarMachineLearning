@@ -30,14 +30,16 @@ public class SmartCarSimulator {
     int numImages = 4;
     double t;
 
+    
     UniformRandom random = new UniformRandom();
 
     ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
 
-    public SmartCarSimulator(ArrayList<SmartCar> cars, Road road) {
+    public SmartCarSimulator(ArrayList<SmartCar> cars, Road road, int numCarColors) {
         this.cars = cars;
         this.road = road;
         this.t = 0.0;
+        this.numImages = numCarColors;
 
         for (int i = 0; i < numImages; i++) {
             try {
@@ -76,7 +78,7 @@ public class SmartCarSimulator {
             int j = (int)thiscar.y;
             AffineTransform localAffineTransform1 = AffineTransform.getRotateInstance(-thiscar.theta, i, D.height - j);
 
-            if (thiscar.x < D.width) {
+            if (thiscar.x < D.width+thiscar.width) {
 
                 g2.setTransform(localAffineTransform1);
                 BufferedImage image = images.get(thiscar.color);
@@ -95,9 +97,10 @@ public class SmartCarSimulator {
         }
 
         for (Integer i : removelist) {
-            cars.remove(i);
+            road.remove(i);
+            //System.out.println("Remove: "+i);
         }
-
+        removelist.clear();
         return;
 
     }
