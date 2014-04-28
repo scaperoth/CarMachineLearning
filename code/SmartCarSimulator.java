@@ -44,6 +44,7 @@ public class SmartCarSimulator {
                 images.add(ImageIO.read(new File("images/car" + (i+1) + ".png")));
             } catch (IOException ex) {
                 // handle exception...
+            	System.err.println("FILE NOT FOUND");
             }
         }
 
