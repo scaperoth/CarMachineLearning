@@ -11,13 +11,15 @@ import javax.swing.border.*;
 public class TrafficSim extends JPanel {
     //traffic details
     double speedLimit = 8.0;
-    int numLanes = 2;
+    int numLanes = 3;
     int maxNumCars = 100;
-    int numCars = 0;
     double startSpeed = 10; //Not used????
     boolean DEBUG = true;
     double laneWidth = 30;
-    double speederSpeed = 20;
+    double speederSpeed = 10;
+
+    //number of different car images available
+    int numCarColors = 6;
 
     //SmartCarSimulator carSim = null;
     //Arraylist<SmartCar> cars;
@@ -91,7 +93,7 @@ public class TrafficSim extends JPanel {
     void reset () {
         //setScene ();
         roadControl.removeCars();
-        numCars = 0;
+
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
         thisTime = 0;
@@ -116,7 +118,7 @@ public class TrafficSim extends JPanel {
         //creates sim from car list
         //creates controllers from car list
         cars = roadControl.getCars();
-        carSim = new SmartCarSimulator(cars, roadControl);
+        carSim = new SmartCarSimulator(cars, roadControl, numCarColors);
 
     }
 
@@ -164,7 +166,7 @@ public class TrafficSim extends JPanel {
             }
             double time = carSim.getTime()/(200/sleeptime) ;
             topMessage = "Time: " + df.format(time);
-            if (numCars < maxNumCars) {
+            if (roadControl.getNumCars() < maxNumCars) {
                 addNewCar(time);
 
             }
@@ -187,12 +189,11 @@ public class TrafficSim extends JPanel {
 
             SmartCar newCar;
             if (isSpeeder == 0) {
-                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, random.uniform(5,speedLimit), roadControl, DEBUG, false);
+                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, random.uniform(5,speedLimit), roadControl, DEBUG, false, numCarColors);
             } else {
-                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speederSpeed, roadControl, DEBUG, true);
+                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speederSpeed, roadControl, DEBUG, true, numCarColors);
             }
             roadControl.add(newCar);
-            numCars++;
             nextWaitTime = random.uniform(0.1, 1);
             thisTime = time;
             isSpeeder = random.uniform(0, 1);
@@ -288,6 +289,7 @@ public class TrafficSim extends JPanel {
 
     void makeFrame () {
         JFrame frame = new JFrame ();
+        frame.setResizable(false);
         frame.setSize (1000, 700);
         frame.setTitle ("Car GUI and Simulator");
         Container cPane = frame.getContentPane();

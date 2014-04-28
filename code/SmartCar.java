@@ -33,6 +33,7 @@ public class SmartCar {
 	double height = 16;
 
 	int color = 1;
+	int numCarColors= 4;
 
     boolean DEBUG;
 
@@ -55,7 +56,7 @@ public class SmartCar {
 	 * @param obstacles [description]
 	 * @param sensors   [description]
 	 */
-	public SmartCar (int lane, double initTheta, double startSpeed, Road thisRoad, boolean debug, boolean isSpeeder) {
+	public SmartCar (int lane, double initTheta, double startSpeed, Road thisRoad, boolean debug, boolean isSpeeder, int numCarColors) {
 		//        this.obstacles = obstacles;
 		//        this.sensors = sensors;
 		//        this.lane = lane;
@@ -70,11 +71,11 @@ public class SmartCar {
 		this.isStraightening = false;
 		this.changingLanes = false;
 		this.isSpeeder = isSpeeder;
-
+		this.numCarColors = numCarColors;
 		this.DEBUG = debug;
 		distMoved = 0.0;
 
-		this.color = random.uniform(0,3);
+		this.color = random.uniform(0,numCarColors-1);
 	}
 
 	/**
