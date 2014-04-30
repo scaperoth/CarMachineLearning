@@ -139,19 +139,29 @@ public class SmartCar {
 		if(!isSpeeder) {
 			//Step 1: See if there is a speeder behind you, get closest
 			SmartCar speeder = findSpeeder();
+			//if there is a speeder, slow down until you are directly in front
 			if (speeder != null) {
-				//Step 2: If speeder, see if there is an open lane
-				int targetLane = road.openLaneforSpeeder(speeder);
-				if (targetLane == 0) {
-					//If lane is 0, all lanes covered. Need to slow people down
-					if(DEBUG) System.out.println("All lanes in front of speeder taken");
+				//Slow down until car is in front of speeder.
+				if (!frontOfSpeeder(speeder)) {
+					vel = vel*DECEL_RATE;
+					if (DEBUG) System.out.println("Slowing down to get speeder at " + road.getX(speeder));
 				}
-				else if (targetLane > lane) {
-					if (!changeLanes(false) && DEBUG) System.out.println("Cant change lanes right to get speeder") ;
-				}
-				else {
-					if (!changeLanes(true) && DEBUG) System.out.println("Cant change lanes left to get speeder") ;
-				}
+				//Then go the speed limit.
+				else vel = road.speedLimit;
+				
+				
+//				//Step 2: If speeder, see if there is an open lane
+//				int targetLane = road.openLaneforSpeeder(speeder);
+//				if (targetLane == 0) {
+//					//If lane is 0, all lanes covered. Need to slow people down
+//					if(DEBUG) System.out.println("All lanes in front of speeder taken");
+//				}
+//				else if (targetLane > lane) {
+//					if (!changeLanes(false) && DEBUG) System.out.println("Cant change lanes right to get speeder") ;
+//				}
+//				else {
+//					if (!changeLanes(true) && DEBUG) System.out.println("Cant change lanes left to get speeder") ;
+//				}
 			}
 		}
 
@@ -171,6 +181,11 @@ public class SmartCar {
 		//
 		//}
 
+	}
+
+	private boolean frontOfSpeeder(SmartCar speeder) {
+		if (Math.abs(this.x -(road.getX(speeder) + width)) < CAR_MIN_SPACING) return true;
+		else return false;
 	}
 
 	/**
