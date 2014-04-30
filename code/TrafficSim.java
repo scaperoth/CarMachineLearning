@@ -9,11 +9,17 @@ import javax.swing.border.*;
 
 
 public class TrafficSim extends JPanel {
-    //traffic details
-    double speedLimit = 8.0;
+    public final double MAXSPEED = 10.0;
+    public final double MINSPEED = 5.0;
+    public final double SPEEDLIMIT = 8.0;
+
     int numLanes = 3;
     int maxNumCars = 100;
+    int currNumCars = 1;
     double startSpeed = 10; //Not used????
+    double sumSpeeds = 0;
+    double avgSpeed = 0;
+
     boolean DEBUG = true;
     double laneWidth = 30;
     double speederSpeed = 10;
@@ -37,9 +43,12 @@ public class TrafficSim extends JPanel {
     // The time step. 0.1 is a large value. We might reduce it
     // later and also reduce the sleeptime.
     double delT = .1;
-    int sleeptime= 10;
+    int sleeptime = 10;
+
     DecimalFormat df = new DecimalFormat("##.##");
     String topMessage = "";
+    String avgCarMessage = "";
+    String numCarMessage = "";
 
     UniformRandom random = new UniformRandom();
     double thisTime = 0;
@@ -82,6 +91,12 @@ public class TrafficSim extends JPanel {
         g.setColor (Color.black);
 
         g.drawString (topMessage, 20, 30);
+
+        avgSpeed = sumSpeeds / currNumCars;
+
+        g.drawString (numCarMessage, 100, 50);
+        g.drawString (avgCarMessage, 100, 30);
+
     }
 
 
@@ -92,6 +107,7 @@ public class TrafficSim extends JPanel {
 
     void reset () {
         //setScene ();
+        clearMetrics();
         roadControl.removeCars();
 
         // Must add boundaries only after setScene()
@@ -99,7 +115,7 @@ public class TrafficSim extends JPanel {
         thisTime = 0;
         nextWaitTime = 0;
 
-        //set first car...  
+        //set first car...
         addNewCar(0);
 
         // This must follow setScene() and sensors.
@@ -111,7 +127,12 @@ public class TrafficSim extends JPanel {
         this.repaint ();
     }
 
+    void clearMetrics(){
 
+        currNumCars = 1;
+        avgSpeed = 0;
+        sumSpeeds = 0;
+    }
     void setCar () {
         //creates road
         //calls getCars() from road
@@ -164,8 +185,11 @@ public class TrafficSim extends JPanel {
                     break;
                 }
             }
-            double time = carSim.getTime()/(200/sleeptime) ;
+            double time = carSim.getTime() / (200 / sleeptime) ;
             topMessage = "Time: " + df.format(time);
+            numCarMessage = "# of Cars: "+ currNumCars;
+            avgCarMessage = "Avg Speed: " + df.format(avgSpeed);
+
             if (roadControl.getNumCars() < maxNumCars) {
                 addNewCar(time);
 
@@ -186,16 +210,20 @@ public class TrafficSim extends JPanel {
 
     public void addNewCar(double time) {
         if (time >= thisTime + nextWaitTime) {
-
+            double speed = 0;
             SmartCar newCar;
             if (isSpeeder == 0) {
-                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, random.uniform(5,speedLimit), roadControl, DEBUG, false, numCarColors);
+                speed = random.uniform(MINSPEED, SPEEDLIMIT);
+                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, false, numCarColors);
             } else {
-                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speederSpeed, roadControl, DEBUG, true, numCarColors);
+                speed = random.uniform(SPEEDLIMIT + 1, MAXSPEED);
+                newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, true, numCarColors);
             }
             roadControl.add(newCar);
-            nextWaitTime = random.uniform(0.1, 1);
+            nextWaitTime = random.uniform(delT, sleeptime/10);
             thisTime = time;
+            currNumCars++;
+            sumSpeeds += speed;
             isSpeeder = random.uniform(0, 1);
         }
 
@@ -283,7 +311,7 @@ public class TrafficSim extends JPanel {
 
     public void loadController() {
 
-        roadControl = new Road(speedLimit, numLanes, laneWidth, DEBUG);
+        roadControl = new Road(SPEEDLIMIT, numLanes, laneWidth, DEBUG);
 
     }
 
