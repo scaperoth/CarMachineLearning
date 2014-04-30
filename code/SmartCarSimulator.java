@@ -86,7 +86,7 @@ public class SmartCarSimulator {
                 g2.setTransform(localAffineTransform1);
                 BufferedImage image = images.get(thiscar.color);
                 g2.drawImage(image, i - (int)thiscar.width / 2 , D.height - j - (int)(thiscar.height / 2), null);
-
+ 
                 if (thiscar.isSpeeder) {
 
                     g2.setColor(Color.red);

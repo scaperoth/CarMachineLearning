@@ -355,9 +355,9 @@ public class SmartCar {
 
 	private SmartCar findSpeeder(){
 		SmartCar closest = null;
-		for (SmartCar c: road.cars) {
+		for (SmartCar c: road.getCars()) {
 			//Check if car is a speeder and if behind me
-			if(c.isSpeeder && (road.getX(c) < (this.x + width))) {
+			if(c.isSpeeder && (road.getX(c) < (this.x - width/2))) {
 				//Check is this speeder is closer then current closest
 				if((closest == null)|| road.getX(c) < road.getX(closest)) closest = c;
 			}
