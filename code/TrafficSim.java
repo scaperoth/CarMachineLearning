@@ -24,7 +24,7 @@ public class TrafficSim extends JPanel {
     double numofSpeeders = 0;
     double percentSpeeders = 0;
 
-    boolean DEBUG = true;
+    boolean DEBUG = false;
     double laneWidth = 30;
     double speederSpeed = 10;
 
@@ -320,7 +320,7 @@ public class TrafficSim extends JPanel {
 
     public void loadController() {
 
-        roadControl = new Road(SPEEDLIMIT, numLanes, laneWidth, DEBUG);
+        roadControl = new Road(SPEEDLIMIT, numLanes, laneWidth, DEBUG, this);
 
     }
 
