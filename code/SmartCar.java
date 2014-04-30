@@ -13,7 +13,10 @@ public class SmartCar {
 	public final double STRAIGHTEN_ADJUSTMENT = 0;
 	public final double DECEL_RATE = .66;
 	public final double CLOSEST_SPEEDER_THRESH = 400;
+//	public final double JERK_VALUE = .2;
 
+	private boolean accelMode = false; //Developer setting
+	
 	// The two controls: either (vel,phi) or (acc,phi)
 	double acc;       // Acceleration.
 	double vel;       // Velocity.
@@ -119,21 +122,24 @@ public class SmartCar {
 			else{}
 		}
 
+		SmartCar closeCar = tooCloseToCar();
 		//Finally, check if about to hit something
-		if (tooCloseToCar()) {
+		if (closeCar != null) {
 			//Speeder will first try to change lanes
 			if (this.isSpeeder) {
 				if (!changeLanes(true)) {
 					if (!changeLanes(false)) {
 						//If unable to change lanes (both left and right return false), slow down
-						slowDown();
+						if(accelMode) goSpeed(road.getVel(closeCar));
+						else slowDown();
 					}
 				}
 			}
 
 			else {
 				//If not speeder, just slow down if near car
-				slowDown();
+				if(accelMode) goSpeed(road.getVel(closeCar));
+				else slowDown();
 				if (DEBUG) System.out.println("Law abider slowing down. Vel now " + vel*10 + "mph");
 
 			}
@@ -141,7 +147,10 @@ public class SmartCar {
 		else {
 
 			//If not about to hit car, speeder return to targetVelocity
-			vel = targetVel;
+			if (accelMode) goSpeed(targetVel);
+			else {
+				vel = targetVel;
+			}
 			
 //			if (vel > targetVel) slowDown();
 //			else if (vel < targetVel) speedUp();
@@ -157,7 +166,7 @@ public class SmartCar {
 			if (speeder != null) {
 				isGettingSpeeder = true;
 
-				//If there is a car directly behind you that is not a speeder, try to towards speeder change lanes
+				//If there is a car directly behind you that is not a speeder, try to move towards speeder change lanes
 				//If unable, maintain speed
 				if(frontOfCar() && !frontOfSpeeder(speeder, false)) {
 
@@ -178,7 +187,9 @@ public class SmartCar {
 				}
 				//Else if not in front of a speeder in another lane, slow down
 				else if (!frontOfSpeeder(speeder, true)) {
-					slowDown();
+					if(accelMode) goSpeed(vel*.99);
+					else slowDown();
+
 				}
 
 				else {
@@ -234,7 +245,7 @@ public class SmartCar {
 	 * updates lane value
 	 * @return [description]
 	 */
-	public boolean tooCloseToCar() {
+	public SmartCar tooCloseToCar() {
 		ArrayList<SmartCar> cars = road.getCars();
 		for (SmartCar c : cars) {
 			//Car ignores itself
@@ -244,12 +255,12 @@ public class SmartCar {
 					//Check if car is in front and too close
 					if ((road.getX(c) > this.x) && ((road.getX(c) - (this.x + width)) < CAR_MIN_SPACING)) {
 						if (DEBUG) System.out.println("Car detected in front");
-						return true;
+						return c;
 					}
 				}
 			}
 		}
-		return false;
+		return null;
 
 		//change lanes if necessary
 	}
@@ -379,16 +390,32 @@ public class SmartCar {
 	}
 
 	private void slowDown(){
-
-		vel = DECEL_RATE*vel;
+		//		acc -= JERK_VALUE*road.trafficSim.delT;
+		//		acc = DECEL_RATE;
+		if(accelMode)vel -= acc*road.trafficSim.delT;
+		else vel = DECEL_RATE*vel;
 		System.out.println("Slowing down to " + vel + " mph.");
 
 	}
 
 	private void speedUp(){;
-		vel =(2-DECEL_RATE)*vel;
+	//		acc += JERK_VALUE*road.trafficSim.delT;
+	//		acc = DECEL_RATE;
+	if (accelMode) vel += acc*road.trafficSim.delT;			
+	else vel =(2-DECEL_RATE)*vel;
 
 		System.out.println("Speeding up to " + vel + " mph.");
 	}
 
+	private void goSpeed(double targetSpeed) {
+		double deltaVel = Math.abs(targetSpeed - this.vel);
+//		acc = deltaVel*JERK_VALUE;
+		acc = deltaVel;
+
+
+		if (this.vel > targetSpeed) slowDown();
+		else if (this.vel < targetSpeed) speedUp();
+	}
+
 }
+
