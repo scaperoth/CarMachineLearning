@@ -261,7 +261,11 @@ public class TrafficSim extends JPanel {
         //
         //pass cars to next step
         carSim.nextStep (delT);
-
+        for (SmartCar i : carSim.removelist) {
+            roadControl.remove(i);
+            //System.out.println("Remove: "+i);
+        }
+        carSim.removelist.clear();
         //remove car if goes too far
 
         return false;

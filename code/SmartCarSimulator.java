@@ -107,6 +107,14 @@ public class SmartCarSimulator {
                     g2.drawLine(i, cartop, i - 4, cartop - 4);
                     g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
 
+                }else {
+                    g2.setColor(Color.gray);
+                    g2.setStroke(new BasicStroke(3));
+                    int cartop = D.height - j - (int)thiscar.height / 2;
+                    g2.drawLine(i, cartop, i, cartop - 10);
+                    g2.drawLine(i, cartop, i + 4, cartop - 4);
+                    g2.drawLine(i, cartop, i - 4, cartop - 4);
+                    g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
                 }
 
                 /**g2.setColor(Color.cyan);
@@ -121,17 +129,13 @@ public class SmartCarSimulator {
 
         }
 
-        for (SmartCar i : removelist) {
-            road.remove(i);
-            //System.out.println("Remove: "+i);
-        }
-        removelist.clear();
+        
         return;
 
     }
 
     public void nextStep(double deltaTime) {
-
+        
         this.t += deltaTime;
         for (SmartCar thiscar : cars) {
 
