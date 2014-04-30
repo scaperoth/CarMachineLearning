@@ -5,7 +5,7 @@ import java.awt.*;
 
 
 public class SmartCar {
-	public final double CAR_MIN_SPACING = 50;
+	public final double CAR_MIN_SPACING = 20;
 	public final double THETA_THRESHOLD = .1;
 	public final double ROTATION_RATE = 25;
 	public final double TURNING_ANGLE_DEGREES = 60;
@@ -125,7 +125,7 @@ public class SmartCar {
 				if (!changeLanes(true)) {
 					if (!changeLanes(false)) {
 						//If unable to change lanes (both left and right return false), slow down
-						vel = vel * DECEL_RATE;
+						slowDown();
 					}
 				}
 			}
@@ -133,7 +133,7 @@ public class SmartCar {
 			else {
 				//If not speeder, just slow down if near car
 				if (DEBUG) System.out.println("Law abider slowing down");
-				vel = vel * DECEL_RATE;
+				slowDown();
 			}
 		}
 		//If not about to hit car, speeder return to targetVelocity
@@ -146,37 +146,34 @@ public class SmartCar {
 			//if there is a speeder, slow down until you are directly in front
 			if (speeder != null) {
 				isGettingSpeeder = true;
-				//Slow down until car is in front of speeder, anyLane = true;
-				if (!frontOfSpeeder(speeder, true)) {
-					vel = vel*DECEL_RATE;
-					if (DEBUG) System.out.println("Slowing down to get speeder at " + road.getX(speeder));
-				}
-				else if (!frontOfCar()) {
-					//If in front of another car, try to change lanes toward speeder.
-					int targetLane = road.openLaneforSpeeder(speeder);
-					if (targetLane == 0) {
-						//If lane is 0, all lanes covered. Need to slow down
-						if(DEBUG) System.out.println("All lanes in front of speeder taken");
-						vel = vel * DECEL_RATE;
-					}
-					else if (targetLane > lane) {
+
+				//If there is a car directly behind you that is not a speeder, try to towards speeder change lanes
+				//If unable, maintain speed
+				if(frontOfCar() && !frontOfSpeeder(speeder, false)) {
+
+					if (road.getLane(speeder) > lane) {
 						if (!changeLanes(false)) {
-							vel = vel *DECEL_RATE;
+							//Maintaining speed
 							if(DEBUG) System.out.println("Cant change lanes right to get speeder") ;
 						}
 					}
 					else {
 						if (!changeLanes(true)) {
-							vel = vel *DECEL_RATE;
+							//Maintaining speed
 							if (DEBUG) System.out.println("Cant change lanes left to get speeder") ;
 						}
 					}
+
+
 				}
-				//Then go the speed limit.
-				else vel = road.speedLimit;
+				//Else if not in front of a speeder in another lane, slow down
+				else if (!frontOfSpeeder(speeder, true)) {
+					slowDown();
+				}
 
-
-				//				//Step 2: If speeder, see if there is an open lane
+				else {
+					//Maintain speed 
+				}
 
 			}
 			//else if no speeder, return to target speed
@@ -209,7 +206,7 @@ public class SmartCar {
 	private boolean frontOfCar() {
 		//For each car, return true if in front and in same lane
 		for (SmartCar c: road.getCars()) {
-			if (!c.equals(this) && (Math.abs(this.x -(road.getX(c) + width)) < CAR_MIN_SPACING) && (road.getLane(c) == this.lane)) return true;
+			if (!c.equals(this) && (Math.abs(this.x - (road.getX(c) + width)) < CAR_MIN_SPACING) && (road.getLane(c) == this.lane)) return true;
 		}
 		//If no car returned true, return false
 		return false;
@@ -235,7 +232,7 @@ public class SmartCar {
 				//Check if in the same lane
 				if ((this.lane == road.getLane(c)) || ((this.newlane == road.getLane(c)) && this.changingLanes)|| (this.lane == road.getNewLane(c))) {
 					//Check if car is in front and too close
-					if ((road.getX(c) > this.x) && ((road.getX(c) - this.x) < CAR_MIN_SPACING)) {
+					if ((road.getX(c) > this.x) && ((road.getX(c) - (this.x + width)) < CAR_MIN_SPACING)) {
 						if (DEBUG) System.out.println("Car detected in front");
 						return true;
 					}
@@ -355,11 +352,16 @@ public class SmartCar {
 
 	private SmartCar findSpeeder(){
 		SmartCar closest = null;
+		double dist = road.windowWidth;
 		for (SmartCar c: road.getCars()) {
 			//Check if car is a speeder and if behind me
 			if(c.isSpeeder && (road.getX(c) < (this.x - width/2))) {
 				//Check is this speeder is closer then current closest
-				if((closest == null)|| road.getX(c) < road.getX(closest)) closest = c;
+				double toThis = this.x - road.getX(c);
+				if((closest == null)|| toThis < dist) {
+					closest = c;
+					dist = toThis;
+				}
 			}
 		}
 		if ((this.x - road.getX(closest)) < CLOSEST_SPEEDER_THRESH) return closest;
