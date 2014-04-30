@@ -86,11 +86,12 @@ public class SmartCarSimulator {
                 if (thiscar.isSpeeder) {
                     g2.setColor(Color.red);
 
-                    g2.setStroke(new BasicStroke(2));
+                    g2.setStroke(new BasicStroke(3));
                     int cartop = D.height - j - (int)thiscar.height / 2;
-                    g2.drawLine(i, cartop, i, D.height - j - 20);
+                    g2.drawLine(i, cartop, i, cartop - 10);
                     g2.drawLine(i, cartop, i + 5, cartop - 5);
                     g2.drawLine(i, cartop, i - 5, cartop - 5);
+                    g2.drawString((int)thiscar.vel*10+"",i-7, cartop-15);
                }
 
                 /**g2.setColor(Color.cyan);
