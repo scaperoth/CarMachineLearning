@@ -62,7 +62,7 @@ public class SmartCar {
 		//        this.lane = lane;
 		this.vel = this.targetVel = startSpeed;
 		this.phi = 0;
-		this.x = 0;
+		this.x = -width;
 		this.theta = initTheta;
 		this.lane = lane;
 		this.road = thisRoad;

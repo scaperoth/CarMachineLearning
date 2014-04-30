@@ -1,5 +1,4 @@
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -30,7 +29,7 @@ public class SmartCarSimulator {
     int numImages = 4;
     double t;
 
-    
+
     UniformRandom random = new UniformRandom();
 
     ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
@@ -43,10 +42,10 @@ public class SmartCarSimulator {
 
         for (int i = 0; i < numImages; i++) {
             try {
-                images.add(ImageIO.read(new File("images/car" + (i+1) + ".png")));
+                images.add(ImageIO.read(new File("images/car" + (i + 1) + ".png")));
             } catch (IOException ex) {
                 // handle exception...
-            	System.err.println("FILE NOT FOUND");
+                System.err.println("FILE NOT FOUND");
             }
         }
 
@@ -78,11 +77,21 @@ public class SmartCarSimulator {
             int j = (int)thiscar.y;
             AffineTransform localAffineTransform1 = AffineTransform.getRotateInstance(-thiscar.theta, i, D.height - j);
 
-            if (thiscar.x < D.width+thiscar.width) {
+            if (thiscar.x < D.width + thiscar.width) {
 
                 g2.setTransform(localAffineTransform1);
                 BufferedImage image = images.get(thiscar.color);
-                g.drawImage(image, i-(int)thiscar.width/2 , D.height - j-(int)(thiscar.height/2), null);
+                g2.drawImage(image, i - (int)thiscar.width / 2 , D.height - j - (int)(thiscar.height / 2), null);
+
+                if (thiscar.isSpeeder) {
+                    g2.setColor(Color.red);
+
+                    g2.setStroke(new BasicStroke(2));
+                    int cartop = D.height - j - (int)thiscar.height / 2;
+                    g2.drawLine(i, cartop, i, D.height - j - 20);
+                    g2.drawLine(i, cartop, i + 5, cartop - 5);
+                    g2.drawLine(i, cartop, i - 5, cartop - 5);
+               }
 
                 /**g2.setColor(Color.cyan);
                   g2.fillOval(i - 15, D.height - j - 8, 30, 16);
@@ -107,7 +116,7 @@ public class SmartCarSimulator {
 
     public void nextStep(double deltaTime) {
 
-            this.t += deltaTime;
+        this.t += deltaTime;
         for (SmartCar thiscar : cars) {
 
             double d1 = deltaTime * thiscar.vel * Math.cos(thiscar.theta);
@@ -147,7 +156,7 @@ public class SmartCarSimulator {
         return theta;
     }
 
-    public void resetClock(){
+    public void resetClock() {
         this.t = 0;
     }
 
