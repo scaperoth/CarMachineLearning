@@ -15,7 +15,7 @@ public class SmartCar {
 	public final double CLOSEST_SPEEDER_THRESH = 400;
 //	public final double JERK_VALUE = .2;
 
-	private boolean accelMode = false; //Developer setting
+	private boolean accelMode = true; //Developer setting
 	
 	// The two controls: either (vel,phi) or (acc,phi)
 	double acc;       // Acceleration.
@@ -293,14 +293,14 @@ public class SmartCar {
 			}
 
 			else {
-				//Check if there is a car in the next lane					
+				//Check if there is a car in the next lane or about to change into lane				
 				for (SmartCar c: road.getCars()) {
 					//Ignore self
 					if(!c.equals(this)) {
-						//If car from list is in the lane trying to change to
-						if(road.getLane(c)==this.lane+deltaLane) {
-							//Return false if in the range of X coordinates (checks in front as well)
-							if((road.getX(c) > this.x-1.5*width) && road.getX(c) < this.x+2.5*width) {
+						//If car from list is in the lane trying to change to or changing to that lane
+						if(road.getLane(c)==this.lane+deltaLane || (c.changingLanes && (c.newlane == this.lane+deltaLane))) {
+							//Return false if in the range of X coordinates (checks in front as well slightly further)
+							if((road.getX(c) > this.x-1.5*width) && road.getX(c) < this.x+2*width) {
 								if(DEBUG) System.out.println("Cannot change lanes left due to car occupying space");
 								return false;
 							}
