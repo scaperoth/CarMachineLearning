@@ -5,7 +5,7 @@ import java.awt.*;
 
 
 public class SmartCar {
-	public final double CAR_MIN_SPACING = 20;
+	public final double CAR_MIN_SPACING = 10;
 	public final double THETA_THRESHOLD = .1;
 	public final double ROTATION_RATE = 25;
 	public final double TURNING_ANGLE_DEGREES = 60;
@@ -63,6 +63,7 @@ public class SmartCar {
 		//        this.sensors = sensors;
 		//        this.lane = lane;
 		this.vel = this.targetVel = startSpeed;
+		this.acc = 0;
 		this.phi = 0;
 		this.x = -width;
 		this.theta = initTheta;
@@ -132,12 +133,21 @@ public class SmartCar {
 
 			else {
 				//If not speeder, just slow down if near car
-				if (DEBUG) System.out.println("Law abider slowing down");
 				slowDown();
+				if (DEBUG) System.out.println("Law abider slowing down. Vel now " + vel*10 + "mph");
+
 			}
 		}
-		//If not about to hit car, speeder return to targetVelocity
-		else vel = targetVel;
+		else {
+
+			//If not about to hit car, speeder return to targetVelocity
+			vel = targetVel;
+			
+//			if (vel > targetVel) slowDown();
+//			else if (vel < targetVel) speedUp();
+			if(DEBUG)System.out.println("Returning to target velocity. Vel now " + vel*10 + "mph");
+
+		}
 
 		//Catch speeder logic
 		if(!isSpeeder) {
@@ -179,8 +189,8 @@ public class SmartCar {
 			//else if no speeder, return to target speed
 			else {
 				isGettingSpeeder = false;
-				if(vel > targetVel) slowDown();
-				else if (vel < targetVel) speedUp();
+				//				if(vel > targetVel) slowDown();
+				//				else if (vel < targetVel) speedUp();
 			}
 		}//End catch speeder
 
@@ -278,8 +288,8 @@ public class SmartCar {
 					if(!c.equals(this)) {
 						//If car from list is in the lane trying to change to
 						if(road.getLane(c)==this.lane+deltaLane) {
-							//Return false if in the range of X coordinates
-							if((road.getX(c) > this.x-1.5*width) && road.getX(c) < this.x+1.5*width) {
+							//Return false if in the range of X coordinates (checks in front as well)
+							if((road.getX(c) > this.x-1.5*width) && road.getX(c) < this.x+2.5*width) {
 								if(DEBUG) System.out.println("Cannot change lanes left due to car occupying space");
 								return false;
 							}
@@ -340,15 +350,15 @@ public class SmartCar {
 		if ((this.theta < THETA_THRESHOLD) || (2 * Math.PI - this.theta < THETA_THRESHOLD)) return true;
 		else return false;
 	}
-
-	/**
-	 * adjust to speed to parameter
-	 * @param v velocity to change to
-	 */
-	public void adjustSpeed(double v) {
-		if (DEBUG) System.out.println("Velocity changing to: " + v * 10 + " mph");
-		this.vel = v;
-	}
+	//
+	//	/**
+	//	 * adjust to speed to parameter
+	//	 * @param v velocity to change to
+	//	 */
+	//	public void adjustSpeed(double v) {
+	//		if (DEBUG) System.out.println("Velocity changing to: " + v * 10 + " mph");
+	//		this.vel = v;
+	//	}
 
 	private SmartCar findSpeeder(){
 		SmartCar closest = null;
@@ -369,14 +379,16 @@ public class SmartCar {
 	}
 
 	private void slowDown(){
-		vel = vel*DECEL_RATE;
-	}
 
-	private void speedUp(){
-		vel = vel*(2-DECEL_RATE);
+		vel = DECEL_RATE*vel;
+		System.out.println("Slowing down to " + vel + " mph.");
 
 	}
 
+	private void speedUp(){;
+		vel =(2-DECEL_RATE)*vel;
 
+		System.out.println("Speeding up to " + vel + " mph.");
+	}
 
 }

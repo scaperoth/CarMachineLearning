@@ -18,6 +18,7 @@ public class Road {
     double roadTop;
     double roadBottom;
     double windowHeight, windowWidth;
+    TrafficSim trafficSim;
 
     Color roadColor = Color.DARK_GRAY;
     Color lineColor = Color.yellow;
@@ -29,11 +30,12 @@ public class Road {
      * @param numLanes   [description]
      * @param laneWidth  [description]
      */
-    public Road(double speedLimit, int numLanes, double laneWidth, boolean debug) {
+    public Road(double speedLimit, int numLanes, double laneWidth, boolean debug, TrafficSim sim) {
         this.speedLimit = speedLimit;
         this.numLanes = numLanes;
         this.laneWidth = laneWidth;
         this.DEBUG = debug;
+        this.trafficSim = sim;
     }
 
     /**
@@ -105,7 +107,7 @@ public class Road {
         if (cars.contains(car)) {
             return car.x;
         } else {
-            if (DEBUG) System.out.println("getX failed: Car not in arraylist");
+//            if (DEBUG) System.out.println("getX failed: Car not in arraylist");
             return -1;
         }
     }
