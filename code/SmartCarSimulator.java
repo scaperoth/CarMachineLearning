@@ -27,7 +27,7 @@ public class SmartCarSimulator {
     double d = 4.0D;
     double S = 30.0D;
     double L = 40.0D;
-    ArrayList<Integer> removelist = new ArrayList<Integer>();
+    ArrayList<SmartCar> removelist = new ArrayList<SmartCar>();
     Road road;
     ArrayList<SmartCar> cars;
     int numImages = 4;
@@ -116,12 +116,12 @@ public class SmartCarSimulator {
                  */
 
             } else {
-                removelist.add(cars.indexOf(thiscar));
+                removelist.add(thiscar);
             }
 
         }
 
-        for (Integer i : removelist) {
+        for (SmartCar i : removelist) {
             road.remove(i);
             //System.out.println("Remove: "+i);
         }

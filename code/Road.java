@@ -52,12 +52,12 @@ public class Road {
      * @param car  [description]
      * @param lane [description]
      */
-    public boolean remove(int carIndex) {
+    public boolean remove(SmartCar car) {
         if (cars.isEmpty()) {
             if (DEBUG) System.out.println("Remove car failed: No cars left in arrayList");
             return false;
         } else {
-            cars.remove(carIndex);
+            cars.remove(car);
             numCars--;
             return true;
         }

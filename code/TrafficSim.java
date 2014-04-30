@@ -21,6 +21,9 @@ public class TrafficSim extends JPanel {
     double sumSpeeds = 0;
     double avgSpeed = 0;
 
+    double numofSpeeders = 0;
+    double percentSpeeders = 0;
+
     boolean DEBUG = true;
     double laneWidth = 30;
     double speederSpeed = 10;
@@ -50,6 +53,7 @@ public class TrafficSim extends JPanel {
     String topMessage = "";
     String avgCarMessage = "";
     String numCarMessage = "";
+    String percentSpeederMsg = "";
 
     UniformRandom random = new UniformRandom();
     double thisTime = 0;
@@ -95,8 +99,9 @@ public class TrafficSim extends JPanel {
 
         avgSpeed = sumSpeeds / currNumCars;
 
-        g.drawString (numCarMessage, 100, 50);
         g.drawString (avgCarMessage, 100, 30);
+        g.drawString (numCarMessage, 100, 50);
+        g.drawString (percentSpeederMsg, 100, 70);
 
     }
 
@@ -187,6 +192,7 @@ public class TrafficSim extends JPanel {
             topMessage = "Time: " + df.format(time);
             numCarMessage = "# of Cars: " + currNumCars;
             avgCarMessage = "Avg Speed: " + df.format(SPEEDTRANSLATION * avgSpeed) + " mph";
+            percentSpeederMsg = df.format(percentSpeeders) + "% speeders";
 
             if (roadControl.getNumCars() < maxNumCars) {
                 addNewCar(time);
@@ -216,12 +222,15 @@ public class TrafficSim extends JPanel {
             } else {
                 speed = random.uniform(SPEEDLIMIT + 1.0, MAXSPEED);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, true, numCarColors);
+                numofSpeeders++;
+                percentSpeeders = 100*(numofSpeeders/currNumCars);
             }
             roadControl.add(newCar);
             nextWaitTime = random.uniform(delT, 1);
             thisTime = time;
             currNumCars++;
             sumSpeeds += speed;
+
             isSpeeder = random.uniform(0, 1);
         }
 
