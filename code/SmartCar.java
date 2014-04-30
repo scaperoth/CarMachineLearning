@@ -29,6 +29,7 @@ public class SmartCar {
 	boolean isStraightening;
 	Road road;
 	boolean isSpeeder;
+	boolean isGettingSpeeder;
 
 	double width = 34;
 	double height = 16;
@@ -71,6 +72,7 @@ public class SmartCar {
 
 		this.isStraightening = false;
 		this.changingLanes = false;
+		this.isGettingSpeeder = false;
 		this.isSpeeder = isSpeeder;
 		this.numCarColors = numCarColors;
 		this.DEBUG = debug;
@@ -143,6 +145,7 @@ public class SmartCar {
 			SmartCar speeder = findSpeeder();
 			//if there is a speeder, slow down until you are directly in front
 			if (speeder != null) {
+				isGettingSpeeder = true;
 				//Slow down until car is in front of speeder, anyLane = true;
 				if (!frontOfSpeeder(speeder, true)) {
 					vel = vel*DECEL_RATE;
@@ -176,7 +179,13 @@ public class SmartCar {
 				//				//Step 2: If speeder, see if there is an open lane
 
 			}
-		}
+			//else if no speeder, return to target speed
+			else {
+				isGettingSpeeder = true;
+				if(vel > targetVel) slowDown();
+				else if (vel < targetVel) speedUp();
+			}
+		}//End catch speeder
 
 
 		//
@@ -205,7 +214,7 @@ public class SmartCar {
 		//If no car returned true, return false
 		return false;
 	}
-	
+
 	//Check if in front of speeder. If anyLane = false, speeder must be in same lane. Otherwise any lane
 	private boolean frontOfSpeeder(SmartCar speeder, boolean anyLane) {
 		if (Math.abs(this.x -(road.getX(speeder) + width)) < CAR_MIN_SPACING) return (anyLane || (road.getLane(speeder) == this.lane));
@@ -355,6 +364,15 @@ public class SmartCar {
 		}
 		if (this.x - road.getX(closest) < CLOSEST_SPEEDER_THRESH) return closest;
 		else return null;
+	}
+
+	private void slowDown(){
+		vel = vel*DECEL_RATE;
+	}
+
+	private void speedUp(){
+		vel = vel*(2-DECEL_RATE);
+
 	}
 
 
