@@ -35,15 +35,15 @@ public class SmartCar {
 	int color = 1;
 	int numCarColors= 4;
 
-    boolean DEBUG;
+	boolean DEBUG;
 
-    ArrayList<Rectangle2D.Double> obstacles;
-    //    SensorPack sensors;
+	ArrayList<Rectangle2D.Double> obstacles;
+	//    SensorPack sensors;
 
-    // Is the first control an accelerator?
-    boolean isAccelModel = false;
+	// Is the first control an accelerator?
+	boolean isAccelModel = false;
 
-    UniformRandom random = new UniformRandom();
+	UniformRandom random = new UniformRandom();
 
 	/**
 	 * [init description]
@@ -75,7 +75,7 @@ public class SmartCar {
 		this.DEBUG = debug;
 		distMoved = 0.0;
 
-		this.color = random.uniform(0,numCarColors-1);
+		this.color = UniformRandom.uniform(0,numCarColors-1);
 	}
 
 	/**
@@ -109,11 +109,11 @@ public class SmartCar {
 		//If not changing lanes or straightening, do logic
 		else {
 			phi = 0;
-			
+
 			if (isSpeeder){}
 			else{}
 		}
-		
+
 		//Finally, check if about to hit something
 		if (tooCloseToCar()) {
 			//Speeder will first try to change lanes
@@ -125,16 +125,35 @@ public class SmartCar {
 					}
 				}
 			}
-			
+
 			else {
 				//If not speeder, just slow down if near car
-					if (DEBUG) System.out.println("Law abider slowing down");
-					vel = vel * DECEL_RATE;
+				if (DEBUG) System.out.println("Law abider slowing down");
+				vel = vel * DECEL_RATE;
 			}
 		}
 		//If not about to hit car, speeder return to targetVelocity
 		else vel = targetVel;
 
+		//Catch speeder logic
+		if(!isSpeeder) {
+			//Step 1: See if there is a speeder behind you, get closest
+			SmartCar speeder = findSpeeder();
+			if (speeder != null) {
+				//Step 2: If speeder, see if there is an open lane
+				int targetLane = road.openLaneforSpeeder(speeder);
+				if (targetLane == 0) {
+					//If lane is 0, all lanes covered. Need to slow people down
+					if(DEBUG) System.out.println("All lanes in front of speeder taken");
+				}
+				else if (targetLane > lane) {
+					if (!changeLanes(false) && DEBUG) System.out.println("Cant change lanes right to get speeder") ;
+				}
+				else {
+					if (!changeLanes(true) && DEBUG) System.out.println("Cant change lanes left to get speeder") ;
+				}
+			}
+		}
 
 
 		//
@@ -285,6 +304,18 @@ public class SmartCar {
 	public void adjustSpeed(double v) {
 		if (DEBUG) System.out.println("Velocity changing to: " + v * 10 + " mph");
 		this.vel = v;
+	}
+	
+	private SmartCar findSpeeder(){
+		SmartCar closest = null;
+		for (SmartCar c: road.cars) {
+			//Check if car is a speeder and if behind me
+			if(c.isSpeeder && (road.getX(c) < (this.x - width))) {
+				//Check is this speeder is closer then current closest
+				if((closest == null)|| road.getX(c) < road.getX(closest)) closest = c;
+			}
+		}
+		return closest;
 	}
 
 
