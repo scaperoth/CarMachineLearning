@@ -97,7 +97,7 @@ public class SmartCarSimulator {
                     g2.drawLine(i, cartop, i - 4, cartop - 4);
                     g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
 
-                } else if (thiscar.vel != thiscar.targetVel) {
+                } else if (thiscar.isGettingSpeeder) {
 
                     g2.setColor(Color.green);
                     g2.setStroke(new BasicStroke(3));

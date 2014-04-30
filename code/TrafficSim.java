@@ -216,7 +216,7 @@ public class TrafficSim extends JPanel {
         if (time >= thisTime + nextWaitTime) {
             double speed = 0;
             SmartCar newCar;
-            if (isSpeeder == 0) {
+            if (isSpeeder >= 1) {
                 speed = random.uniform(MINSPEED, SPEEDLIMIT);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, false, numCarColors);
             } else {
@@ -231,7 +231,7 @@ public class TrafficSim extends JPanel {
             currNumCars++;
             sumSpeeds += speed;
 
-            isSpeeder = random.uniform(0, 1);
+            isSpeeder = random.uniform(0, 2);
         }
 
     }
