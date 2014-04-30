@@ -273,15 +273,15 @@ public class Road {
 		else return -1;
 	}
 	
-	public int openLaneforSpeeder(SmartCar speeder){
-		for(int i=1; i<=numLanes; i++) {
-			boolean laneHasCar = false;
-			for(SmartCar c: cars) {
-				if(c.lane == i) laneHasCar = true;
-			}
-			if (!laneHasCar) return i;
-		}
-		return 0;
-	}
+//	public int openLaneforSpeeder(SmartCar speeder){
+//		for(int i=1; i<=numLanes; i++) {
+//			boolean laneHasCar = false;
+//			for(SmartCar c: cars) {
+//				if(c.lane == i) laneHasCar = true;
+//			}
+//			if (!laneHasCar) return i;
+//		}
+//		return 0;
+//	}
 }
 
