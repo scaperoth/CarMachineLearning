@@ -17,7 +17,7 @@ public class Road {
     boolean DEBUG;
     double roadTop;
     double roadBottom;
-    double windowHeight;
+    double windowHeight, windowWidth;
 
     Color roadColor = Color.DARK_GRAY;
     Color lineColor = Color.yellow;
@@ -52,12 +52,12 @@ public class Road {
      * @param car  [description]
      * @param lane [description]
      */
-    public boolean remove(int carIndex) {
+    public boolean remove(SmartCar car) {
         if (cars.isEmpty()) {
             if (DEBUG) System.out.println("Remove car failed: No cars left in arrayList");
             return false;
         } else {
-            cars.remove(carIndex);
+            cars.remove(car);
             numCars--;
             return true;
         }
@@ -79,6 +79,7 @@ public class Road {
      */
     public void draw (Graphics2D g2, Dimension D) {
         windowHeight = D.height;
+        windowWidth = D.width;
         roadTop =(windowHeight / 2)-((numLanes/2)+laneWidth);
         roadBottom = roadTop + (numLanes * laneWidth);
 

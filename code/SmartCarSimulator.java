@@ -18,8 +18,8 @@ public class SmartCarSimulator {
      *
      *
      */
-    
-    double speedtranslation = 5.0;
+
+    double speedtranslation = 10.0;
 
     double maxHeight = 1000.0D;
 
@@ -27,7 +27,7 @@ public class SmartCarSimulator {
     double d = 4.0D;
     double S = 30.0D;
     double L = 40.0D;
-    ArrayList<Integer> removelist = new ArrayList<Integer>();
+    ArrayList<SmartCar> removelist = new ArrayList<SmartCar>();
     Road road;
     ArrayList<SmartCar> cars;
     int numImages = 4;
@@ -86,25 +86,27 @@ public class SmartCarSimulator {
                 g2.setTransform(localAffineTransform1);
                 BufferedImage image = images.get(thiscar.color);
                 g2.drawImage(image, i - (int)thiscar.width / 2 , D.height - j - (int)(thiscar.height / 2), null);
-
+ 
                 if (thiscar.isSpeeder) {
+
                     g2.setColor(Color.red);
-
                     g2.setStroke(new BasicStroke(3));
                     int cartop = D.height - j - (int)thiscar.height / 2;
                     g2.drawLine(i, cartop, i, cartop - 10);
                     g2.drawLine(i, cartop, i + 4, cartop - 4);
                     g2.drawLine(i, cartop, i - 4, cartop - 4);
                     g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
-                } else if (thiscar.vel != thiscar.targetVel) {
+
+                } else if (thiscar.isGettingSpeeder) {
+
                     g2.setColor(Color.green);
-
                     g2.setStroke(new BasicStroke(3));
                     int cartop = D.height - j - (int)thiscar.height / 2;
                     g2.drawLine(i, cartop, i, cartop - 10);
                     g2.drawLine(i, cartop, i + 4, cartop - 4);
                     g2.drawLine(i, cartop, i - 4, cartop - 4);
                     g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
+
                 }
 
                 /**g2.setColor(Color.cyan);
@@ -114,12 +116,12 @@ public class SmartCarSimulator {
                  */
 
             } else {
-                removelist.add(cars.indexOf(thiscar));
+                removelist.add(thiscar);
             }
 
         }
 
-        for (Integer i : removelist) {
+        for (SmartCar i : removelist) {
             road.remove(i);
             //System.out.println("Remove: "+i);
         }

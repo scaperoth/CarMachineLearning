@@ -9,10 +9,10 @@ import javax.swing.border.*;
 
 
 public class TrafficSim extends JPanel {
-    public final double MAXSPEED = 20.0;
-    public final double MINSPEED = 10.0;
-    public final double SPEEDLIMIT = 15.0;
-    public final double SPEEDTRANSLATION = 5.0;
+    public final double MAXSPEED = 10.0;
+    public final double MINSPEED = 5.0;
+    public final double SPEEDLIMIT = 7.5;
+    public final double SPEEDTRANSLATION = 10;
 
     int numLanes = 3;
     int maxNumCars = 100;
@@ -20,6 +20,9 @@ public class TrafficSim extends JPanel {
     double startSpeed = 10; //Not used????
     double sumSpeeds = 0;
     double avgSpeed = 0;
+
+    double numofSpeeders = 0;
+    double percentSpeeders = 0;
 
     boolean DEBUG = true;
     double laneWidth = 30;
@@ -50,6 +53,7 @@ public class TrafficSim extends JPanel {
     String topMessage = "";
     String avgCarMessage = "";
     String numCarMessage = "";
+    String percentSpeederMsg = "";
 
     UniformRandom random = new UniformRandom();
     double thisTime = 0;
@@ -95,8 +99,9 @@ public class TrafficSim extends JPanel {
 
         avgSpeed = sumSpeeds / currNumCars;
 
-        g.drawString (numCarMessage, 100, 50);
         g.drawString (avgCarMessage, 100, 30);
+        g.drawString (numCarMessage, 100, 50);
+        g.drawString (percentSpeederMsg, 100, 70);
 
     }
 
@@ -187,6 +192,7 @@ public class TrafficSim extends JPanel {
             topMessage = "Time: " + df.format(time);
             numCarMessage = "# of Cars: " + currNumCars;
             avgCarMessage = "Avg Speed: " + df.format(SPEEDTRANSLATION * avgSpeed) + " mph";
+            percentSpeederMsg = df.format(percentSpeeders) + "% speeders";
 
             if (roadControl.getNumCars() < maxNumCars) {
                 addNewCar(time);
@@ -210,19 +216,22 @@ public class TrafficSim extends JPanel {
         if (time >= thisTime + nextWaitTime) {
             double speed = 0;
             SmartCar newCar;
-            if (isSpeeder == 0) {
+            if (isSpeeder >= 1) {
                 speed = random.uniform(MINSPEED, SPEEDLIMIT);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, false, numCarColors);
             } else {
                 speed = random.uniform(SPEEDLIMIT + 1.0, MAXSPEED);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, true, numCarColors);
+                numofSpeeders++;
+                percentSpeeders = 100*(numofSpeeders/currNumCars);
             }
             roadControl.add(newCar);
             nextWaitTime = random.uniform(delT, 1);
             thisTime = time;
             currNumCars++;
             sumSpeeds += speed;
-            isSpeeder = random.uniform(0, 1);
+
+            isSpeeder = random.uniform(0, 2);
         }
 
     }
