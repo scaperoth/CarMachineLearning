@@ -9,10 +9,10 @@ import javax.swing.border.*;
 
 
 public class TrafficSim extends JPanel {
-    public final double MAXSPEED = 20.0;
-    public final double MINSPEED = 10.0;
-    public final double SPEEDLIMIT = 15.0;
-    public final double SPEEDTRANSLATION = 5.0;
+    public final double MAXSPEED = 10.0;
+    public final double MINSPEED = 5.0;
+    public final double SPEEDLIMIT = 7.5;
+    public final double SPEEDTRANSLATION = 10;
 
     int numLanes = 3;
     int maxNumCars = 100;

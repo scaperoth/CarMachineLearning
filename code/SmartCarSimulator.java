@@ -18,8 +18,8 @@ public class SmartCarSimulator {
      *
      *
      */
-    
-    double speedtranslation = 5.0;
+
+    double speedtranslation = 10.0;
 
     double maxHeight = 1000.0D;
 
@@ -88,23 +88,25 @@ public class SmartCarSimulator {
                 g2.drawImage(image, i - (int)thiscar.width / 2 , D.height - j - (int)(thiscar.height / 2), null);
 
                 if (thiscar.isSpeeder) {
+
                     g2.setColor(Color.red);
-
                     g2.setStroke(new BasicStroke(3));
                     int cartop = D.height - j - (int)thiscar.height / 2;
                     g2.drawLine(i, cartop, i, cartop - 10);
                     g2.drawLine(i, cartop, i + 4, cartop - 4);
                     g2.drawLine(i, cartop, i - 4, cartop - 4);
                     g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
+
                 } else if (thiscar.vel != thiscar.targetVel) {
-                    g2.setColor(Color.green);
 
+                    g2.setColor(Color.green);
                     g2.setStroke(new BasicStroke(3));
                     int cartop = D.height - j - (int)thiscar.height / 2;
                     g2.drawLine(i, cartop, i, cartop - 10);
                     g2.drawLine(i, cartop, i + 4, cartop - 4);
                     g2.drawLine(i, cartop, i - 4, cartop - 4);
                     g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
+
                 }
 
                 /**g2.setColor(Color.cyan);
