@@ -10,8 +10,8 @@ import javax.swing.border.*;
 
 public class TrafficSim extends JPanel {
     public final double MAXSPEED = 10.0;
-    public final double MINSPEED = 5.0;
-    public final double SPEEDLIMIT = 8.0;
+    public final double MINSPEED = 4.0;
+    public final double SPEEDLIMIT = 7.0;
 
     int numLanes = 3;
     int maxNumCars = 100;
@@ -188,7 +188,7 @@ public class TrafficSim extends JPanel {
             double time = carSim.getTime() / (200 / sleeptime) ;
             topMessage = "Time: " + df.format(time);
             numCarMessage = "# of Cars: "+ currNumCars;
-            avgCarMessage = "Avg Speed: " + df.format(avgSpeed);
+            avgCarMessage = "Avg Speed: " + df.format(10*avgSpeed)+" mph";
 
             if (roadControl.getNumCars() < maxNumCars) {
                 addNewCar(time);
