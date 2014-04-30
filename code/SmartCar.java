@@ -181,7 +181,7 @@ public class SmartCar {
 			}
 			//else if no speeder, return to target speed
 			else {
-				isGettingSpeeder = true;
+				isGettingSpeeder = false;
 				if(vel > targetVel) slowDown();
 				else if (vel < targetVel) speedUp();
 			}
@@ -355,14 +355,14 @@ public class SmartCar {
 
 	private SmartCar findSpeeder(){
 		SmartCar closest = null;
-		for (SmartCar c: road.cars) {
+		for (SmartCar c: road.getCars()) {
 			//Check if car is a speeder and if behind me
-			if(c.isSpeeder && (road.getX(c) < (this.x - width))) {
+			if(c.isSpeeder && (road.getX(c) < (this.x - width/2))) {
 				//Check is this speeder is closer then current closest
 				if((closest == null)|| road.getX(c) < road.getX(closest)) closest = c;
 			}
 		}
-		if (this.x - road.getX(closest) < CLOSEST_SPEEDER_THRESH) return closest;
+		if ((this.x - road.getX(closest)) < CLOSEST_SPEEDER_THRESH) return closest;
 		else return null;
 	}
 
