@@ -9,9 +9,10 @@ import javax.swing.border.*;
 
 
 public class TrafficSim extends JPanel {
-    public final double MAXSPEED = 10.0;
-    public final double MINSPEED = 4.0;
-    public final double SPEEDLIMIT = 7.0;
+    public final double MAXSPEED = 20.0;
+    public final double MINSPEED = 10.0;
+    public final double SPEEDLIMIT = 15.0;
+    public final double SPEEDTRANSLATION = 5.0;
 
     int numLanes = 3;
     int maxNumCars = 100;
@@ -70,6 +71,7 @@ public class TrafficSim extends JPanel {
 
         // Clear.
         Dimension D = this.getSize();
+
         javaWidth = D.width;
         g.setColor (Color.white);
         g.fillRect (0, 0, D.width, D.height);
@@ -85,7 +87,6 @@ public class TrafficSim extends JPanel {
             carSim.draw(g2, D, g);
         }
 
-
         g2.setTransform (savedTransform);
         // Top msg.
         g.setColor (Color.black);
@@ -98,9 +99,6 @@ public class TrafficSim extends JPanel {
         g.drawString (avgCarMessage, 100, 30);
 
     }
-
-
-
 
     ////////////////////////////////////////////////////////////////////////
     // Animation
@@ -127,7 +125,7 @@ public class TrafficSim extends JPanel {
         this.repaint ();
     }
 
-    void clearMetrics(){
+    void clearMetrics() {
 
         currNumCars = 1;
         avgSpeed = 0;
@@ -187,8 +185,8 @@ public class TrafficSim extends JPanel {
             }
             double time = carSim.getTime() / (200 / sleeptime) ;
             topMessage = "Time: " + df.format(time);
-            numCarMessage = "# of Cars: "+ currNumCars;
-            avgCarMessage = "Avg Speed: " + df.format(10*avgSpeed)+" mph";
+            numCarMessage = "# of Cars: " + currNumCars;
+            avgCarMessage = "Avg Speed: " + df.format(SPEEDTRANSLATION * avgSpeed) + " mph";
 
             if (roadControl.getNumCars() < maxNumCars) {
                 addNewCar(time);
@@ -216,7 +214,7 @@ public class TrafficSim extends JPanel {
                 speed = random.uniform(MINSPEED, SPEEDLIMIT);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, false, numCarColors);
             } else {
-                speed = random.uniform(SPEEDLIMIT + 1, MAXSPEED);
+                speed = random.uniform(SPEEDLIMIT + 1.0, MAXSPEED);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, true, numCarColors);
             }
             roadControl.add(newCar);
@@ -260,7 +258,6 @@ public class TrafficSim extends JPanel {
 
     JPanel makeControlPanel () {
         JPanel panel = new JPanel ();
-
         panel.add (new JLabel ("  "));
         JButton resetB = new JButton ("Reset");
         resetB.addActionListener (
@@ -319,7 +316,7 @@ public class TrafficSim extends JPanel {
         JFrame frame = new JFrame ();
         frame.setResizable(false);
         frame.setSize (1000, 700);
-        frame.setTitle ("Car GUI and Simulator");
+        frame.setTitle ("Traffic GUI and Simulator");
         Container cPane = frame.getContentPane();
         cPane.add (makeControlPanel(), BorderLayout.SOUTH);
         cPane.add (this, BorderLayout.CENTER);
