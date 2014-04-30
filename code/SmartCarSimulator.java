@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
+import java.text.*;
 
 public class SmartCarSimulator {
     /**
@@ -17,6 +18,9 @@ public class SmartCarSimulator {
      *
      *
      */
+    
+    double speedtranslation = 5.0;
+
     double maxHeight = 1000.0D;
 
     double r = 5.0D;
@@ -28,7 +32,7 @@ public class SmartCarSimulator {
     ArrayList<SmartCar> cars;
     int numImages = 4;
     double t;
-
+    DecimalFormat df = new DecimalFormat("##");
 
     UniformRandom random = new UniformRandom();
 
@@ -89,10 +93,19 @@ public class SmartCarSimulator {
                     g2.setStroke(new BasicStroke(3));
                     int cartop = D.height - j - (int)thiscar.height / 2;
                     g2.drawLine(i, cartop, i, cartop - 10);
-                    g2.drawLine(i, cartop, i + 5, cartop - 5);
-                    g2.drawLine(i, cartop, i - 5, cartop - 5);
-                    g2.drawString((int)thiscar.vel*10+"",i-7, cartop-15);
-               }
+                    g2.drawLine(i, cartop, i + 4, cartop - 4);
+                    g2.drawLine(i, cartop, i - 4, cartop - 4);
+                    g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
+                } else if (thiscar.vel != thiscar.targetVel) {
+                    g2.setColor(Color.green);
+
+                    g2.setStroke(new BasicStroke(3));
+                    int cartop = D.height - j - (int)thiscar.height / 2;
+                    g2.drawLine(i, cartop, i, cartop - 10);
+                    g2.drawLine(i, cartop, i + 4, cartop - 4);
+                    g2.drawLine(i, cartop, i - 4, cartop - 4);
+                    g2.drawString(df.format(thiscar.vel * speedtranslation) + "", i - 7, cartop - 15);
+                }
 
                 /**g2.setColor(Color.cyan);
                   g2.fillOval(i - 15, D.height - j - 8, 30, 16);
