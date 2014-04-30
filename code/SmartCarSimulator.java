@@ -121,17 +121,13 @@ public class SmartCarSimulator {
 
         }
 
-        for (SmartCar i : removelist) {
-            road.remove(i);
-            //System.out.println("Remove: "+i);
-        }
-        removelist.clear();
+        
         return;
 
     }
 
     public void nextStep(double deltaTime) {
-
+        
         this.t += deltaTime;
         for (SmartCar thiscar : cars) {
 
