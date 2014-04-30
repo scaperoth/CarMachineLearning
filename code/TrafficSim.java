@@ -58,6 +58,9 @@ public class TrafficSim extends JPanel {
     UniformRandom random = new UniformRandom();
     double thisTime = 0;
     double nextWaitTime = 0;
+    double minWaitTime = delT*3;
+    double maxWaitTime = 1;
+
 
     int isSpeeder = random.uniform(0, 1);
 
@@ -226,7 +229,7 @@ public class TrafficSim extends JPanel {
                 percentSpeeders = 100*(numofSpeeders/currNumCars);
             }
             roadControl.add(newCar);
-            nextWaitTime = random.uniform(delT, 1);
+            nextWaitTime = random.uniform(minWaitTime, maxWaitTime);
             thisTime = time;
             currNumCars++;
             sumSpeeds += speed;
