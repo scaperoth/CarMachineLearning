@@ -220,7 +220,7 @@ public class TrafficSim extends JPanel {
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, true, numCarColors);
             }
             roadControl.add(newCar);
-            nextWaitTime = random.uniform(delT, sleeptime/10);
+            nextWaitTime = random.uniform(delT, 1);
             thisTime = time;
             currNumCars++;
             sumSpeeds += speed;
