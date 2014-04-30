@@ -58,7 +58,7 @@ public class TrafficSim extends JPanel {
     UniformRandom random = new UniformRandom();
     double thisTime = 0;
     double nextWaitTime = 0;
-    double minWaitTime = delT;
+    double minWaitTime = delT*3;
     double maxWaitTime = 1;
 
 
