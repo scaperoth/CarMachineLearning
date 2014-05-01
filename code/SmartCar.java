@@ -392,7 +392,7 @@ public class SmartCar {
 		//		acc = DECEL_RATE;
 		if(accelMode) vel -= acc*road.trafficSim.delT;
 		else vel = DECEL_RATE*oldVel;
-		System.out.println("Slowing down to " + vel + " mph.");
+		if (DEBUG) System.out.println("Slowing down to " + vel + " mph.");
 
 	}
 
@@ -402,7 +402,7 @@ public class SmartCar {
 	if (accelMode) vel += acc*road.trafficSim.delT;			
 	else vel =(2-DECEL_RATE)*oldVel;
 
-	System.out.println("Speeding up to " + vel + " mph.");
+	if(DEBUG) System.out.println("Speeding up to " + vel + " mph.");
 	}
 
 	private void goSpeed(double targetSpeed) {
