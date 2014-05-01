@@ -38,11 +38,12 @@ public class SmartCarSimulator {
 
     ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
 
-    public SmartCarSimulator(ArrayList<SmartCar> cars, Road road, int numCarColors) {
+    public SmartCarSimulator(ArrayList<SmartCar> cars, Road road, int numCarColors, double speedtranslation) {
         this.cars = cars;
         this.road = road;
         this.t = 0.0;
         this.numImages = numCarColors;
+        this.speedtranslation = speedtranslation;
 
         for (int i = 0; i < numImages; i++) {
             try {

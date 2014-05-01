@@ -145,7 +145,7 @@ public class TrafficSim extends JPanel {
         //creates sim from car list
         //creates controllers from car list
         cars = roadControl.getCars();
-        carSim = new SmartCarSimulator(cars, roadControl, numCarColors);
+        carSim = new SmartCarSimulator(cars, roadControl, numCarColors, SPEEDTRANSLATION);
 
     }
 
