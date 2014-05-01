@@ -14,16 +14,16 @@ public class TrafficSim extends JPanel {
     double speedLimit = minSpeed + ((maxSpeed - minSpeed) / 2);
     double speedTranslation = 100 / maxSpeed;
 
-    int numLanes = 3;
+    int numLanes = 2;
     int maxNumCars = 10;
 
-    int currNumCars = 1;
+    int currNumCars = 0;
     double startSpeed = 10; //Not used????
     double sumSpeeds = 0;
     double avgSpeed = 0;
 
     double numofSpeeders = 0;
-    double percentSpeeders = .30;
+    double percentSpeeders = .10;
     double totalpercentSpeeders = 0;
 
     boolean DEBUG = false;
@@ -109,7 +109,7 @@ public class TrafficSim extends JPanel {
 
         g.drawString (avgCarMessage, 120, 30);
         g.drawString (numCarMessage, 120, 50);
-        g.drawString (percentSpeederMsg, 120, 70);
+        //g.drawString (percentSpeederMsg, 120, 70);
 
 
     }
@@ -118,7 +118,6 @@ public class TrafficSim extends JPanel {
     // Animation
 
     void reset () {
-        loadController();
 
         speedLimit = Double.parseDouble(speedLimitField.getText()) / speedTranslation;
         if (speedLimit >= maxSpeed - .01) {
@@ -149,6 +148,7 @@ public class TrafficSim extends JPanel {
         isPaused = false;
         stopAnimationThread ();
         clearMetrics();
+        loadController();
 
         this.repaint ();
 
@@ -165,6 +165,7 @@ public class TrafficSim extends JPanel {
     void clearMetrics() {
 
         currNumCars = 0;
+        numofSpeeders = 0;
         avgSpeed = 0;
         sumSpeeds = 0;
 
@@ -227,9 +228,9 @@ public class TrafficSim extends JPanel {
             }
             time = carSim.getTime() / (200 / sleeptime) ;
             topMessage = "Time: " + df.format(time);
-            numCarMessage = "# of Cars: " + (currNumCars-1);
+            numCarMessage = "# of Cars: " + (currNumCars - 1);
             avgCarMessage = "Approx Avg Speed: " + df.format(speedTranslation * avgSpeed) + " mph";
-            percentSpeederMsg = df.format(totalpercentSpeeders) + "% speeders";
+            percentSpeederMsg = df.format(totalpercentSpeeders) + "% speeders on the road";
 
             if (roadControl.getNumCars() < maxNumCars) {
                 addNewCar(time);
@@ -253,19 +254,27 @@ public class TrafficSim extends JPanel {
         if (time >= thisTime + nextWaitTime) {
             double speed = 0;
             SmartCar newCar;
+
             if (isSpeeder > percentSpeeders) {
                 speed = random.uniform(minSpeed, speedLimit);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, false, numCarColors);
             } else {
                 speed = random.uniform(speedLimit + 0.01, maxSpeed);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, true, numCarColors);
+
                 numofSpeeders++;
-                totalpercentSpeeders = 100 * (numofSpeeders / currNumCars);
             }
+
             roadControl.add(newCar);
+
+            currNumCars++;
+
+            if (roadControl.numCars > 0)
+                totalpercentSpeeders = 100 * (numofSpeeders/roadControl.numCars);
+            else totalpercentSpeeders = 0;
+
             nextWaitTime = random.uniform(minWaitTime, maxWaitTime);
             thisTime = time;
-            currNumCars++;
             sumSpeeds += speed;
 
             isSpeeder = random.uniform(0.0, 1.0);
