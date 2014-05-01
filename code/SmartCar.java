@@ -15,7 +15,7 @@ public class SmartCar {
 	public final double STRAIGHTEN_ADJUSTMENT = 0;
 	public final double DECEL_RATE = .66;
 	public final double CLOSEST_SPEEDER_THRESH = 400;
-	public final double COVERED_THRESHOLD = 300;
+	public final double COVERED_THRESHOLD = 200;
 	public final double SPEEDER_CAUGHT_TIME = 1;
 	//	public final double JERK_VALUE = .2;
 
@@ -139,12 +139,12 @@ public class SmartCar {
 					if (!changeLanes(false)) {
 						//If unable to change lanes (both left and right return false), car is caught, slow down
 						if(!isCaught) { 
-							timeCaught = road.trafficSim.thisTime;
+							timeCaught = road.trafficSim.time;
 							isCaught = true;
 						}
 						
 						//Is has been caught for long enough, speeder becomes a "law abider"
-						if ((road.trafficSim.thisTime - timeCaught) > SPEEDER_CAUGHT_TIME) {
+						if ((road.trafficSim.time - timeCaught) > SPEEDER_CAUGHT_TIME) {
 							this.isSpeeder = false;
 							targetVel = road.speedLimit;
 						}
@@ -419,7 +419,7 @@ public class SmartCar {
 
 	private boolean speederLaneCovered(SmartCar speeder){
 		for (SmartCar c: road.getCars()) {
-			if(road.getLane(c) == road.getLane(speeder)){
+			if(road.getLane(c) == road.getLane(speeder) && !c.isSpeeder){
 				if((road.getX(c) > road.getX(speeder)) && ((road.getX(c) - road.getX(speeder)) < COVERED_THRESHOLD)) return true;
 			}
 		}
