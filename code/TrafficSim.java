@@ -9,7 +9,7 @@ import javax.swing.border.*;
 
 
 public class TrafficSim extends JPanel {
-    double maxSpeed = 10.0;
+    double maxSpeed = 15.0;
     double minSpeed = maxSpeed / 2;
     double speedLimit = minSpeed + ((maxSpeed - minSpeed) / 2);
     double speedTranslation = 100 / maxSpeed;
@@ -59,8 +59,8 @@ public class TrafficSim extends JPanel {
 
     UniformRandom random = new UniformRandom();
     double thisTime = 0;
-    double nextWaitTime = 0;
-    double minWaitTime = delT * 3 ;
+    double nextWaitTime = .05;
+    double minWaitTime = delT ;
     double maxWaitTime = 1;
     double time;
 
