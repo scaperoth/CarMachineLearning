@@ -13,10 +13,10 @@ public class SmartCar {
 	public final double STRAIGHTEN_ADJUSTMENT = 0;
 	public final double DECEL_RATE = .66;
 	public final double CLOSEST_SPEEDER_THRESH = 400;
-//	public final double JERK_VALUE = .2;
+	//	public final double JERK_VALUE = .2;
 
-	private boolean accelMode = false; //Developer setting
-	
+	private boolean accelMode = true; //Developer setting
+
 	// The two controls: either (vel,phi) or (acc,phi)
 	double acc;       // Acceleration.
 	double vel;       // Velocity.
@@ -26,6 +26,7 @@ public class SmartCar {
 	double theta;
 	int lane;
 	int newlane;
+	double oldVel;
 	double targetVel; //Velocity car wants to maintain
 	double distMoved;
 	boolean changingLanes;
@@ -45,8 +46,7 @@ public class SmartCar {
 	ArrayList<Rectangle2D.Double> obstacles;
 	//    SensorPack sensors;
 
-	// Is the first control an accelerator?
-	boolean isAccelModel = false;
+
 
 	UniformRandom random = new UniformRandom();
 
@@ -65,7 +65,7 @@ public class SmartCar {
 		//        this.obstacles = obstacles;
 		//        this.sensors = sensors;
 		//        this.lane = lane;
-		this.vel = this.targetVel = startSpeed;
+		this.vel = this.targetVel = this.oldVel = startSpeed;
 		this.acc = 0;
 		this.phi = 0;
 		this.x = -width;
@@ -93,11 +93,7 @@ public class SmartCar {
 	 */
 	public double getControl (int i) {
 		if (i == 1) {
-			if (isAccelModel) {
-				return acc;
-			} else {
-				return vel;
-			}
+			return vel;
 		} else if (i == 2) {
 			return phi;
 		}
@@ -106,6 +102,9 @@ public class SmartCar {
 
 
 	public void move () {
+		oldVel = vel;
+		
+		//If changing lanes or straightening, maintain current vel and phi values
 		if (changingLanes) checkChangingLanes();
 		else if (isStraightening) {
 			//If straightened out, stop rotating
@@ -117,9 +116,9 @@ public class SmartCar {
 		//If not changing lanes or straightening, do logic
 		else {
 			phi = 0;
-
-			if (isSpeeder){}
-			else{}
+//
+//			if (isSpeeder){}
+//			else{}
 		}
 
 		SmartCar closeCar = tooCloseToCar();
@@ -146,17 +145,16 @@ public class SmartCar {
 		}
 		else {
 
-			//If not about to hit car, speeder return to targetVelocity
-			if (accelMode) goSpeed(targetVel);
-			else {
-				vel = targetVel;
-			}
-			
-//			if (vel > targetVel) slowDown();
-//			else if (vel < targetVel) speedUp();
-			if(DEBUG)System.out.println("Returning to target velocity. Vel now " + vel*10 + "mph");
+			//If not about to hit car, return to targetVelocity
+			//			if(isSpeeder || !isGettingSpeeder){
 
+			if (accelMode) goSpeed(targetVel);
+			else vel = targetVel;
+
+
+			if(DEBUG)System.out.println("Returning to target velocity. Vel now " + vel*10 + "mph");
 		}
+		//		}
 
 		//Catch speeder logic
 		if(!isSpeeder) {
@@ -171,8 +169,10 @@ public class SmartCar {
 				if(frontOfCar() && !frontOfSpeeder(speeder, false)) {
 
 					if (road.getLane(speeder) > lane) {
+
+						//changeLanes(false) will return false if unable to change. Otherwise does the change
 						if (!changeLanes(false)) {
-							//Maintaining speed
+							//Maintaining speed by doing nothing
 							if(DEBUG) System.out.println("Cant change lanes right to get speeder") ;
 						}
 					}
@@ -187,7 +187,7 @@ public class SmartCar {
 				}
 				//Else if not in front of a speeder in another lane, slow down
 				else if (!frontOfSpeeder(speeder, true)) {
-					if(accelMode) goSpeed(vel*.99);
+					if(accelMode) goSpeed(0);
 					else slowDown();
 
 				}
@@ -204,23 +204,6 @@ public class SmartCar {
 				//				else if (vel < targetVel) speedUp();
 			}
 		}//End catch speeder
-
-
-		//
-		// logic:
-		//
-		// am i about to hit a car
-		// should i change lanes?
-		// tooCloseToCar()
-		//
-		//if any car is speeding and not i'm changing lanes
-		//is speeder in my lane
-		//are/is other car(s) in the other lane(s)?
-		//
-		//do i need to change lanes to stop speeder?
-		//
-		//}
-
 	}
 
 	//Check if car is in front of any car
@@ -293,14 +276,14 @@ public class SmartCar {
 			}
 
 			else {
-				//Check if there is a car in the next lane					
+				//Check if there is a car in the next lane or about to change into lane				
 				for (SmartCar c: road.getCars()) {
 					//Ignore self
 					if(!c.equals(this)) {
-						//If car from list is in the lane trying to change to
-						if(road.getLane(c)==this.lane+deltaLane) {
-							//Return false if in the range of X coordinates (checks in front as well)
-							if((road.getX(c) > this.x-1.5*width) && road.getX(c) < this.x+2.5*width) {
+						//If car from list is in the lane trying to change to or changing to that lane
+						if(road.getLane(c)==this.lane+deltaLane || (c.changingLanes && (c.newlane == this.lane+deltaLane))) {
+							//Return false if in the range of X coordinates (checks in front as well slightly further)
+							if((road.getX(c) > this.x-1.5*width) && road.getX(c) < this.x+2*width) {
 								if(DEBUG) System.out.println("Cannot change lanes left due to car occupying space");
 								return false;
 							}
@@ -344,15 +327,6 @@ public class SmartCar {
 				if (theta > Math.PI) phi = ROTATION_RATE;
 				else phi = -ROTATION_RATE;
 			}
-
-
-			//set phi/vel
-			//if y val is target lane y
-			//straighten out
-			//if straightened out
-			//changing lanes = false
-
-
 		}
 		return;
 	}
@@ -392,8 +366,8 @@ public class SmartCar {
 	private void slowDown(){
 		//		acc -= JERK_VALUE*road.trafficSim.delT;
 		//		acc = DECEL_RATE;
-		if(accelMode)vel -= acc*road.trafficSim.delT;
-		else vel = DECEL_RATE*vel;
+		if(accelMode) vel -= acc*road.trafficSim.delT;
+		else vel = DECEL_RATE*oldVel;
 		System.out.println("Slowing down to " + vel + " mph.");
 
 	}
@@ -402,19 +376,21 @@ public class SmartCar {
 	//		acc += JERK_VALUE*road.trafficSim.delT;
 	//		acc = DECEL_RATE;
 	if (accelMode) vel += acc*road.trafficSim.delT;			
-	else vel =(2-DECEL_RATE)*vel;
+	else vel =(2-DECEL_RATE)*oldVel;
 
-		System.out.println("Speeding up to " + vel + " mph.");
+	System.out.println("Speeding up to " + vel + " mph.");
 	}
 
 	private void goSpeed(double targetSpeed) {
-		double deltaVel = Math.abs(targetSpeed - this.vel);
-//		acc = deltaVel*JERK_VALUE;
+		if (targetSpeed < 0) targetSpeed = 0;
+		
+		double deltaVel = Math.abs(targetSpeed - this.oldVel);
+		//		acc = deltaVel*JERK_VALUE;
 		acc = deltaVel;
 
 
-		if (this.vel > targetSpeed) slowDown();
-		else if (this.vel < targetSpeed) speedUp();
+		if (this.oldVel > targetSpeed) slowDown();
+		else if (this.oldVel < targetSpeed) speedUp();
 	}
 
 }
