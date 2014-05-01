@@ -15,7 +15,7 @@ public class SmartCar {
 	public final double STRAIGHTEN_ADJUSTMENT = 0;
 	public final double DECEL_RATE = .66;
 	public final double CLOSEST_SPEEDER_THRESH = 400;
-	public final double COVERED_THRESHOLD = 200;
+	public final double COVERED_THRESHOLD = 300;
 	public final double SPEEDER_CAUGHT_TIME = 1;
 	//	public final double JERK_VALUE = .2;
 
@@ -225,6 +225,7 @@ public class SmartCar {
 
 				else {
 					//Maintain speed 
+					if(accelMode) goSpeed(oldVel);
 				}
 
 			}
@@ -366,15 +367,7 @@ public class SmartCar {
 		if ((this.theta < THETA_THRESHOLD) || (2 * Math.PI - this.theta < THETA_THRESHOLD)) return true;
 		else return false;
 	}
-	//
-	//	/**
-	//	 * adjust to speed to parameter
-	//	 * @param v velocity to change to
-	//	 */
-	//	public void adjustSpeed(double v) {
-	//		if (DEBUG) System.out.println("Velocity changing to: " + v * 10 + " mph");
-	//		this.vel = v;
-	//	}
+
 
 	private SmartCar findSpeeder(){
 		SmartCar closest = null;
