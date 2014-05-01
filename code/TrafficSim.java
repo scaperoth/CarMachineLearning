@@ -9,22 +9,22 @@ import javax.swing.border.*;
 
 
 public class TrafficSim extends JPanel {
-    public final double MAXSPEED = 10.0;
-    public final double MINSPEED = 5.0;
-    public final double SPEEDLIMIT = 7.5;
-    public final double SPEEDTRANSLATION = 10;
+    double maxSpeed = 10.0;
+    double minSpeed = maxSpeed / 2;
+    double speedLimit = minSpeed + ((maxSpeed - minSpeed) / 2);
+    double speedTranslation = 100 / maxSpeed;
 
     int numLanes = 4;
     int maxNumCars = 10;
-    
-    
-    int currNumCars = 1;
+
+    int currNumCars = 0;
     double startSpeed = 10; //Not used????
     double sumSpeeds = 0;
     double avgSpeed = 0;
 
     double numofSpeeders = 0;
-    double percentSpeeders = 0;
+    double percentSpeeders = .10;
+    double totalpercentSpeeders = 0;
 
     boolean DEBUG = false;
     double laneWidth = 30;
@@ -60,11 +60,13 @@ public class TrafficSim extends JPanel {
     UniformRandom random = new UniformRandom();
     double thisTime = 0;
     double nextWaitTime = 0;
-    double minWaitTime = delT*3;
+    double minWaitTime = delT * 3 ;
     double maxWaitTime = 1;
+    double time;
 
+    double isSpeeder = random.uniform(0.0, 1.0);
 
-    int isSpeeder = random.uniform(0, 1);
+    JTextField speedLimitField, numberOfLanesField, percentSpeedersField;
 
     public void TrafficSim() {
 
@@ -90,6 +92,7 @@ public class TrafficSim extends JPanel {
         if (roadControl != null) {
             //System.out.println("Draw Road");
             roadControl.draw(g2, D);
+
         }
 
         if (carSim != null) {
@@ -104,9 +107,10 @@ public class TrafficSim extends JPanel {
 
         avgSpeed = sumSpeeds / currNumCars;
 
-        g.drawString (avgCarMessage, 100, 30);
-        g.drawString (numCarMessage, 100, 50);
-        g.drawString (percentSpeederMsg, 100, 70);
+        g.drawString (avgCarMessage, 120, 30);
+        g.drawString (numCarMessage, 120, 50);
+        //g.drawString (percentSpeederMsg, 120, 70);
+
 
     }
 
@@ -114,32 +118,61 @@ public class TrafficSim extends JPanel {
     // Animation
 
     void reset () {
-        //setScene ();
-        clearMetrics();
-        roadControl.removeCars();
+
+        speedLimit = Double.parseDouble(speedLimitField.getText()) / speedTranslation;
+        if (speedLimit >= maxSpeed - .01) {
+            speedLimit = maxSpeed - .02;
+        } else if (speedLimit <= minSpeed + .01) {
+            speedLimit = minSpeed;
+        }
+
+        numLanes = Integer.parseInt(numberOfLanesField.getText());
+        if (numLanes > 10) {
+            numLanes = 10;
+        }
+
+        percentSpeeders = Double.parseDouble(percentSpeedersField.getText()) / 100 ;
+
+        speedLimitField.setText("" + speedLimit * speedTranslation);
+        numberOfLanesField.setText("" + numLanes);
+        percentSpeedersField.setText("" + percentSpeeders * 100);
+
 
         // Must add boundaries only after setScene()
         Dimension D = this.getSize();
         thisTime = 0;
         nextWaitTime = 0;
 
+
+        // Start the animation.
+        isPaused = false;
+        stopAnimationThread ();
+        clearMetrics();
+        loadController();
+
+        this.repaint ();
+
         //set first car...
         addNewCar(0);
 
         // This must follow setScene() and sensors.
         setCar ();
+        roadControl.removeCars();
+
         carSim.resetClock();
-        // Start the animation.
-        isPaused = false;
-        stopAnimationThread ();
-        this.repaint ();
     }
 
     void clearMetrics() {
 
-        currNumCars = 1;
+        currNumCars = 0;
+        numofSpeeders = 0;
         avgSpeed = 0;
         sumSpeeds = 0;
+
+        topMessage = "";
+        numCarMessage = "";
+        avgCarMessage = "";
+        percentSpeederMsg = "";
     }
     void setCar () {
         //creates road
@@ -147,7 +180,7 @@ public class TrafficSim extends JPanel {
         //creates sim from car list
         //creates controllers from car list
         cars = roadControl.getCars();
-        carSim = new SmartCarSimulator(cars, roadControl, numCarColors);
+        carSim = new SmartCarSimulator(cars, roadControl, numCarColors, speedTranslation);
 
     }
 
@@ -193,11 +226,11 @@ public class TrafficSim extends JPanel {
                     break;
                 }
             }
-            double time = carSim.getTime() / (200 / sleeptime) ;
+            time = carSim.getTime() / (200 / sleeptime) ;
             topMessage = "Time: " + df.format(time);
-            numCarMessage = "# of Cars: " + currNumCars;
-            avgCarMessage = "Avg Speed: " + df.format(SPEEDTRANSLATION * avgSpeed) + " mph";
-            percentSpeederMsg = df.format(percentSpeeders) + "% speeders";
+            numCarMessage = "# of Cars: " + (currNumCars - 1);
+            avgCarMessage = "Approx Avg Speed: " + df.format(speedTranslation * avgSpeed) + " mph";
+            percentSpeederMsg = df.format(totalpercentSpeeders) + "% speeders on the road";
 
             if (roadControl.getNumCars() < maxNumCars) {
                 addNewCar(time);
@@ -221,22 +254,30 @@ public class TrafficSim extends JPanel {
         if (time >= thisTime + nextWaitTime) {
             double speed = 0;
             SmartCar newCar;
-            if (isSpeeder >= 1) {
-                speed = random.uniform(MINSPEED, SPEEDLIMIT);
+
+            if (isSpeeder > percentSpeeders) {
+                speed = random.uniform(minSpeed, speedLimit);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, false, numCarColors);
             } else {
-                speed = random.uniform(SPEEDLIMIT + 1.0, MAXSPEED);
+                speed = random.uniform(speedLimit + 0.01, maxSpeed);
                 newCar = new SmartCar((int)random.uniform(1, numLanes), initTheta, speed, roadControl, DEBUG, true, numCarColors);
+
                 numofSpeeders++;
-                percentSpeeders = 100*(numofSpeeders/currNumCars);
             }
+
             roadControl.add(newCar);
+
+            currNumCars++;
+
+            if (roadControl.numCars > 0)
+                totalpercentSpeeders = 100 * (numofSpeeders/roadControl.numCars);
+            else totalpercentSpeeders = 0;
+
             nextWaitTime = random.uniform(minWaitTime, maxWaitTime);
             thisTime = time;
-            currNumCars++;
             sumSpeeds += speed;
 
-            isSpeeder = random.uniform(0, 2);
+            isSpeeder = random.uniform(0.0, 1.0);
         }
 
     }
@@ -273,6 +314,46 @@ public class TrafficSim extends JPanel {
         return false;
     }
 
+    ////////////////////////////////////////////////////////////////////////
+    // GUI construction
+    JPanel makeBottomPanel() {
+        JPanel panel = new JPanel();
+
+        panel.setLayout(new GridLayout(2, 1));
+        JPanel sPanel = makeSetupPanel();
+        sPanel.setBorder(BorderFactory.createTitledBorder("  Set up  "));
+        panel.add(sPanel);
+        JPanel cPanel = makeControlPanel();
+        cPanel.setBorder(BorderFactory.createTitledBorder("  Animate  "));
+        panel.add(cPanel);
+
+        return panel;
+    }
+
+    JPanel makeSetupPanel() {
+        JPanel panel = new JPanel();
+
+        panel.setLayout(new GridLayout(2, 1));
+
+        JPanel topPart = new JPanel();
+
+        topPart.add(new JLabel(" Speed Limit:"));
+        speedLimitField = new JTextField(5);
+        speedLimitField.setText("" + (speedLimit * speedTranslation));
+        topPart.add(speedLimitField);
+        topPart.add(new JLabel(" Number of Lanes"));
+        numberOfLanesField = new JTextField(5);
+        numberOfLanesField.setText("" + numLanes);
+        topPart.add(numberOfLanesField);
+        topPart.add(new JLabel(" Percent of Speeders:"));
+        percentSpeedersField = new JTextField(5);
+        percentSpeedersField.setText("" + (percentSpeeders * 100));
+        topPart.add(percentSpeedersField);
+
+        panel.add(topPart);
+
+        return panel;
+    }
 
     JPanel makeControlPanel () {
         JPanel panel = new JPanel ();
@@ -326,7 +407,7 @@ public class TrafficSim extends JPanel {
 
     public void loadController() {
 
-        roadControl = new Road(SPEEDLIMIT, numLanes, laneWidth, DEBUG, this);
+        roadControl = new Road(speedLimit, numLanes, laneWidth, DEBUG, this);
 
     }
 
@@ -336,9 +417,8 @@ public class TrafficSim extends JPanel {
         frame.setSize (1000, 700);
         frame.setTitle ("Traffic GUI and Simulator");
         Container cPane = frame.getContentPane();
-        cPane.add (makeControlPanel(), BorderLayout.SOUTH);
+        cPane.add (makeBottomPanel(), BorderLayout.SOUTH);
         cPane.add (this, BorderLayout.CENTER);
-        loadController();
         frame.setVisible (true);
     }
 
