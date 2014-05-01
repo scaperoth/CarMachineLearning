@@ -14,7 +14,7 @@ public class TrafficSim extends JPanel {
     public final double SPEEDLIMIT = 7.5;
     public final double SPEEDTRANSLATION = 10;
 
-    int numLanes = 2;
+    int numLanes = 4;
     int maxNumCars = 10;
     
     

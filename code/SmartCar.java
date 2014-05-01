@@ -3,6 +3,8 @@ import java.util.*;
 import java.awt.geom.*;
 import java.awt.*;
 
+import javax.swing.text.html.MinimalHTMLWriter;
+
 
 public class SmartCar {
 	public final double CAR_MIN_SPACING = 10;
@@ -13,6 +15,8 @@ public class SmartCar {
 	public final double STRAIGHTEN_ADJUSTMENT = 0;
 	public final double DECEL_RATE = .66;
 	public final double CLOSEST_SPEEDER_THRESH = 400;
+	public final double COVERED_THRESHOLD = 200;
+	public final double SPEEDER_CAUGHT_TIME = 1;
 	//	public final double JERK_VALUE = .2;
 
 	private boolean accelMode = true; //Developer setting
@@ -34,6 +38,8 @@ public class SmartCar {
 	Road road;
 	boolean isSpeeder;
 	boolean isGettingSpeeder;
+	boolean isCaught;
+	double timeCaught;
 
 	double width = 34;
 	double height = 16;
@@ -81,6 +87,9 @@ public class SmartCar {
 		this.numCarColors = numCarColors;
 		this.DEBUG = debug;
 		distMoved = 0.0;
+		
+		this.isCaught = false;
+		timeCaught = 0;
 
 		this.color = UniformRandom.uniform(0,numCarColors-1);
 
@@ -103,7 +112,7 @@ public class SmartCar {
 
 	public void move () {
 		oldVel = vel;
-		
+
 		//If changing lanes or straightening, maintain current vel and phi values
 		if (changingLanes) checkChangingLanes();
 		else if (isStraightening) {
@@ -116,23 +125,35 @@ public class SmartCar {
 		//If not changing lanes or straightening, do logic
 		else {
 			phi = 0;
-//
-//			if (isSpeeder){}
-//			else{}
+			//
+			//			if (isSpeeder){}
+			//			else{}
 		}
 
 		SmartCar closeCar = tooCloseToCar();
 		//Finally, check if about to hit something
 		if (closeCar != null) {
-			//Speeder will first try to change lanes
-			if (this.isSpeeder) {
+			//Speeder will first try to change lanes (if not doing so already)
+			if (this.isSpeeder && !changingLanes) {
 				if (!changeLanes(true)) {
 					if (!changeLanes(false)) {
-						//If unable to change lanes (both left and right return false), slow down
+						//If unable to change lanes (both left and right return false), car is caught, slow down
+						if(!isCaught) { 
+							timeCaught = road.trafficSim.thisTime;
+							isCaught = true;
+						}
+						
+						//Is has been caught for long enough, speeder becomes a "law abider"
+						if ((road.trafficSim.thisTime - timeCaught) > SPEEDER_CAUGHT_TIME) {
+							this.isSpeeder = false;
+							targetVel = road.speedLimit;
+						}
 						if(accelMode) goSpeed(road.getVel(closeCar));
 						else slowDown();
 					}
+					else isCaught = false;
 				}
+				else isCaught = false;
 			}
 
 			else {
@@ -164,7 +185,8 @@ public class SmartCar {
 			if (speeder != null) {
 				isGettingSpeeder = true;
 
-				//If there is a car directly behind you that is not a speeder, try to move towards speeder change lanes
+
+				//If there is a car directly behind you that is not a speeder, try to move towards speeder by changing lanes
 				//If unable, maintain speed
 				if(frontOfCar() && !frontOfSpeeder(speeder, false)) {
 
@@ -187,8 +209,17 @@ public class SmartCar {
 				}
 				//Else if not in front of a speeder in another lane, slow down
 				else if (!frontOfSpeeder(speeder, true)) {
-					if(accelMode) goSpeed(0);
-					else slowDown();
+					//Check if there is someone in front of speeder. If not, change lanes if possible
+					if (!speederLaneCovered(speeder)) {
+						if(this.lane > road.getLane(speeder)) changeLanes(true);
+						else changeLanes(false);
+					}
+					//else slow down
+					else {
+
+						if(accelMode) goSpeed(oldVel*DECEL_RATE);
+						else slowDown();
+					}
 
 				}
 
@@ -350,7 +381,7 @@ public class SmartCar {
 		double dist = road.windowWidth;
 		for (SmartCar c: road.getCars()) {
 			//Check if car is a speeder and if behind me
-			if(c.isSpeeder && (road.getX(c) < (this.x - width/2))) {
+			if(c.isSpeeder && (road.getX(c) < (this.x + width/2))) {
 				//Check is this speeder is closer then current closest
 				double toThis = this.x - road.getX(c);
 				if((closest == null)|| toThis < dist) {
@@ -383,7 +414,7 @@ public class SmartCar {
 
 	private void goSpeed(double targetSpeed) {
 		if (targetSpeed < 0) targetSpeed = 0;
-		
+
 		double deltaVel = Math.abs(targetSpeed - this.oldVel);
 		//		acc = deltaVel*JERK_VALUE;
 		acc = deltaVel;
@@ -391,6 +422,16 @@ public class SmartCar {
 
 		if (this.oldVel > targetSpeed) slowDown();
 		else if (this.oldVel < targetSpeed) speedUp();
+	}
+
+	private boolean speederLaneCovered(SmartCar speeder){
+		for (SmartCar c: road.getCars()) {
+			if(road.getLane(c) == road.getLane(speeder)){
+				if((road.getX(c) > road.getX(speeder)) && ((road.getX(c) - road.getX(speeder)) < COVERED_THRESHOLD)) return true;
+			}
+		}
+		//If has not returned true, return false
+		return false;
 	}
 
 }
